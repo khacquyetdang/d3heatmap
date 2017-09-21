@@ -2,7 +2,7 @@ import {
     FETCH_CYCLIST_REQUEST,
     FETCH_CYCLIST_SUCCESS,
     FETCH_CYCLIST_ERROR,
-} from '../constants.js';
+} from '../constants';
 
 export function cyclist(state = [], action) {
 

@@ -43,11 +43,27 @@ export function fetchCountryGDP(countryId, intervalDate, page) {
     });
 }
 
+
+
 export function fetchCyclistData() {
     var urlCyclistData = 'https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/cyclist-data.json';
     return fetch(urlCyclistData, myInit)
     .then((response) => response.json()).then((responseJson) => {
         console.log("result fetch Cyclist Data");
+        console.log(responseJson);
+        return responseJson;
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+}
+
+
+export function fetchTemperatureData(ISO3Country, startYear, endYear) {
+    var urlTemperatureData = `http://climatedataapi.worldbank.org/climateweb/rest/v1/country/mavg/tas/${startYear}/${endYear}/${ISO3Country}.JSON`;
+    return fetch(urlTemperatureData, myInit)
+    .then((response) => response.json()).then((responseJson) => {
+        console.log("result fetchTemperatureData", urlTemperatureData);
         console.log(responseJson);
         return responseJson;
     })

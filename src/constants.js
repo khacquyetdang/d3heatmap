@@ -9,6 +9,11 @@ export const FETCH_CYCLIST_REQUEST = 'FETCH_CYCLIST_REQUEST';
 export const FETCH_CYCLIST_SUCCESS = 'FETCH_CYCLIST_SUCCESS';
 export const FETCH_CYCLIST_ERROR = 'FETCH_CYCLIST_ERROR';
 
+export const FETCH_TEMPRATURE_REQUEST = 'FETCH_TEMPRATURE_REQUEST';
+export const FETCH_TEMPRATURE_SUCCESS = 'FETCH_TEMPRATURE_SUCCESS';
+export const FETCH_TEMPRATURE_ERROR = 'FETCH_TEMPRATURE_ERROR';
+
+
 export const svg_dimensions_gdp = {
     margin : {top: 50, right: 100, bottom: 80, left: 100},
     width :960,

@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Select  from 'react-select';
-//import { form, FormGroup, ControlLabel, FormControl } from 'react-bootstrap';
 import './styles/Controls.css';
-import { fetchCountries, fetchCountryGdp } from '../actions'
 
 class Controls extends Component {
 
@@ -19,15 +17,10 @@ class Controls extends Component {
             intervalDate: {start:'1960', end:'2017'},
         };
     }
-    componentDidMount(){
-        if (this.props.countries === undefined ||
-            this.props.countries !== null || this.props.countries.length === 0)
-            {
-                this.props.fetchCountries();
-            }
-        }
+
     componentWillReceiveProps(nextProps)
     {
+        console.log("Controls componentWillReceiveProps : ", nextProps);
         this.props = nextProps;
         var countriesOptions = this.props.countries.map((country) => {
             return { value : country.iso2Code,
@@ -36,7 +29,7 @@ class Controls extends Component {
         this.setState({isCountriesFetching: this.props.isCountriesFetching,
         countriesOptions,
         selectValue: 'FR'});
-        this.props.fetchCountryGdp(this.state.selectValue, this.state.intervalDate);
+        this.props.onCountrySelected(this.state.selectValue);
     }
 
 
@@ -60,12 +53,11 @@ class Controls extends Component {
         {
             return;
         }
-        console.log('State changed to ' + newValue);
         this.setState(
             {
                 selectValue: newValue
             }, () => {
-            this.props.fetchCountryGdp(this.state.selectValue, this.state.intervalDate);
+            this.props.onCountrySelected(this.state.selectValue);
             }
         );
 	}
@@ -99,4 +91,4 @@ function mapStateToProps(state)
         isCountriesFetching
     }
 }
-export default connect(mapStateToProps, { fetchCountryGdp, fetchCountries }) (Controls);
+export default connect(mapStateToProps, null) (Controls);

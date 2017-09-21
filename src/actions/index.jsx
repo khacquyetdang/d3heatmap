@@ -2,8 +2,11 @@ import { fetchCyclist } from './cyclist.jsx';
 
 import { fetchCountries, fetchCountryGdp } from './worldbank.jsx';
 
+import { fetchTemperature } from './climate.jsx';
+
 export {
-     fetchCyclist,
-     fetchCountries,
-     fetchCountryGdp
+    fetchTemperature,
+    fetchCyclist,
+    fetchCountries,
+    fetchCountryGdp
 };

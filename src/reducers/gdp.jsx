@@ -4,13 +4,7 @@ import { FETCH_COUNTRY_REQUEST,
     FETCH_COUNTRY_GDP_SUCCESS,
     FETCH_COUNTRY_GDP_FAILURE,
     FETCH_COUNTRY_GDP_END
-} from '../constants.js';
-
-
-import {isCyclistFetching, cyclist} from './cyclist';
-
-import {combineReducers} from 'redux';
-
+} from '../constants';
 
 
 export function countryGdp(state = [], action) {
@@ -69,15 +63,3 @@ export function isCountriesFetching (state = false, action) {
         }
     }
 }
-
-const appReducer = combineReducers({
-    countries,
-    isCountriesFetching,
-    isCountryGDPFetching,
-    countryGdp,
-    isCyclistFetching,
-    cyclist
-});
-
-
-export default appReducer
