@@ -10,6 +10,8 @@ import browser from 'detect-browser';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/BarChart.css';
 
+import { fetchCountryGdp } from '../actions'
+
 class BarChart extends Component {
     constructor(props) {
         super(props);
@@ -27,8 +29,9 @@ class BarChart extends Component {
                 isCountriesFetching: this.props.isCountriesFetching,
             }
         );
+
+
         this.createBarChart();
-        //this.props.fetchCountryGdp(this.state.selectValue, this.state.intervalDate);
     }
 
     componentDidMount() {
@@ -287,7 +290,7 @@ class BarChart extends Component {
 function mapStateToProps(state)
 {
     console.log("BarChart mapStateToProps: ");
-    console.log(state.countryGdp);
+    console.log(state);
     const {
         isCountriesFetching,
         isCountryGDPFetching,
@@ -300,4 +303,4 @@ function mapStateToProps(state)
         countryGdp
     }
 }
-export default connect(mapStateToProps) (BarChart);
+export default connect(mapStateToProps, { fetchCountryGdp }) (BarChart);

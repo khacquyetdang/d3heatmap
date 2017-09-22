@@ -7,11 +7,13 @@ import { isTemperatureFetching, temperature } from './climate';
 import { countries,
     isCountriesFetching,
     isCountryGDPFetching,
-    countryGdp } from './gdp';
+    countryGdp,
+    countriesOptions } from './gdp';
 
 
 const appReducer = combineReducers({
     countries,
+    countriesOptions,
     isCountriesFetching,
     isCountryGDPFetching,
     countryGdp,

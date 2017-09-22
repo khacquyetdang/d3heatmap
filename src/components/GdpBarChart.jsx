@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ClimatHeatMap from './ClimatHeatMap'
 import BarChart from './BarChart';
 import Controls from './Controls';
 import CyclistScatterplot from './CyclistScatterplot';
@@ -8,17 +7,15 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './styles/App.css';
 import 'react-tabs/style/react-tabs.css';
 import { fetchCountries, fetchCountryGdp } from '../actions'
-
+import { intervalDateGdp } from '../constants';
 
 class GdpBarChart extends Component {
 
+
     onCountrySelectedForGdp = (country) => {
-        var intervalDate = {
-            start:'1960',
-            end:'2017'
-        };
-        this.props.fetchCountryGdp(country, intervalDate);
+        this.props.fetchCountryGdp(country, intervalDateGdp);
     }
+
     render() {
 
         return (
@@ -31,13 +28,4 @@ class GdpBarChart extends Component {
     }
 }
 
-function mapStateToProps(state)
-{
-    const { countries, isCountriesFetching } = state;
-    return {
-        countries,
-        isCountriesFetching
-    }
-}
-
-export default connect(mapStateToProps, {fetchCountryGdp, fetchCountries}) (GdpBarChart);
+export default connect(null, {fetchCountryGdp, fetchCountries}) (GdpBarChart);

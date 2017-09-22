@@ -4,12 +4,12 @@ import ClimatHeatMap from './ClimatHeatMap'
 import GdpBarChart from './GdpBarChart';
 import Controls from './Controls';
 import CyclistScatterplot from './CyclistScatterplot';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './styles/App.css';
 import { HashRouter as Router, Route, Link } from 'react-router-dom';
 import 'react-tabs/style/react-tabs.css';
 import { fetchCountries, fetchCountryGdp } from '../actions'
 import Sidebar from 'react-sidebar';
+import { intervalDateGdp } from '../constants';
 
 class App extends Component {
 
@@ -30,26 +30,34 @@ class App extends Component {
     componentDidMount()
     {
         if (this.props.countries === undefined ||
-            this.props.countries !== null || this.props.countries.length === 0
+            this.props.countries === null || this.props.countries.length === 0
         ) {
             this.props.fetchCountries();
         }
+
+    }
+    componentWillReceiveProps(nextProps)
+    {
+        this.props = nextProps;
+        if (this.props.countryGdp === undefined ||
+            this.props.countryGdp === null || this.props.countryGdp.length === 0
+        ) {
+            this.props.fetchCountryGdp("FR", intervalDateGdp);
+        }
+
     }
 
     onCountrySelectedForGdp = (country) => {
-        var intervalDate = {
-            start:'1960',
-            end:'2017'
-        };
-        this.props.fetchCountryGdp(country, intervalDate);
+        this.props.fetchCountryGdp(country, intervalDateGdp);
     }
     render() {
         return (
             <Router>
                 <div className="App">
-                    <div><Link to='/'>Temperature</Link> {" | "}
-                    <Link to='/gdp'>Gdp</Link> {" | "}
-                    <Link to='/cyclist'>Cyclist</Link>
+                    <div className="menu" >
+                        <Link to='/'>Temperature</Link> {" | "}
+                        <Link  to='/gdp'>Gdp</Link> {" | "}
+                        <Link  to='/cyclist'>Cyclist</Link>
                 </div>
                 <div>
                     <Route exact path='/' component={ClimatHeatMap} />
@@ -63,10 +71,11 @@ class App extends Component {
 
 function mapStateToProps(state)
 {
-    const { countries, isCountriesFetching } = state;
+    const { countries, isCountriesFetching, countryGdp } = state;
     return {
         countries,
-        isCountriesFetching
+        isCountriesFetching,
+        countryGdp
     }
 }
 

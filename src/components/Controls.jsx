@@ -7,29 +7,39 @@ class Controls extends Component {
 
     constructor(props){
         super(props);
+
+        console.log("constructor props", this.props);
         this.state = {
             disabled: false,
-            searchable: this.props.searchable,
+            searchable: true,
             clearable: true,
             selectValue: 'FR',
-            isCountriesFetching : true,
-            countriesOptions : [],
-            intervalDate: {start:'1960', end:'2017'},
+            isCountriesFetching : this.props.isCountriesFetching,
+            countriesOptions : this.props.countriesOptions,
         };
     }
 
+    setCountryOptions = () => {
+        var countriesOptions = this.props.countries.map((country) => {
+            return { value : country.iso2Code,
+                label : country.name };
+            }
+        );
+        console.log("countriesOptions ", countriesOptions);
+        return countriesOptions;
+    }
     componentWillReceiveProps(nextProps)
     {
         console.log("Controls componentWillReceiveProps : ", nextProps);
+        if (nextProps === this.props)
+        {
+        }
         this.props = nextProps;
-        var countriesOptions = this.props.countries.map((country) => {
-            return { value : country.iso2Code,
-            label : country.name };
-        });
-        this.setState({isCountriesFetching: this.props.isCountriesFetching,
-        countriesOptions,
-        selectValue: 'FR'});
-        this.props.onCountrySelected(this.state.selectValue);
+
+        this.setState({ isCountriesFetching: this.props.isCountriesFetching,
+            countriesOptions : this.props.countriesOptions,
+            selectValue: 'FR'}
+        );
     }
 
 
@@ -57,13 +67,14 @@ class Controls extends Component {
             {
                 selectValue: newValue
             }, () => {
-            this.props.onCountrySelected(this.state.selectValue);
+                this.props.onCountrySelected(this.state.selectValue);
             }
         );
-	}
+    }
 
 
     render() {
+        console.log("Controls render state: ", this.state);
 
         return (
             <div className="Controls">
@@ -85,10 +96,12 @@ class Controls extends Component {
 
 function mapStateToProps(state)
 {
-    const { countries, isCountriesFetching } = state;
+    const { countries, countriesOptions, isCountriesFetching, countryGdp } = state;
     return {
         countries,
-        isCountriesFetching
+        countriesOptions,
+        isCountriesFetching,
+        countryGdp
     }
 }
-export default connect(mapStateToProps, null) (Controls);
+export default connect(mapStateToProps) (Controls);

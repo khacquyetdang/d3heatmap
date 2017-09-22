@@ -26,3 +26,8 @@ export const svg_dimensions = {
     width :960,
     height : 500,
 }
+
+export const intervalDateGdp = {
+    start:'1960',
+    end:'2017'
+};

@@ -36,6 +36,28 @@ export function countries(state = [], action) {
     }
 };
 
+export function countriesOptions(state = [], action) {
+
+    switch (action.type) {
+        case FETCH_COUNTRY_SUCCESS: {
+            if (action.response[1] === null)
+            {
+                return [];
+            }
+            var countries = action.response[1];
+            return countriesOptions = countries.map((country) => {
+                return { value : country.iso2Code,
+                    label : country.name };
+                }
+            );
+        }
+        default: {
+            return state;
+        }
+    }
+};
+
+
 export function isCountryGDPFetching (state = false, action) {
     switch (action.type) {
         case FETCH_COUNTRY_GDP_REQUEST: {
