@@ -8,7 +8,17 @@ import { FETCH_COUNTRY_REQUEST,
     FETCH_COUNTRY_GDP_REQUEST,
     FETCH_COUNTRY_GDP_SUCCESS,
     FETCH_COUNTRY_GDP_END,
-    FETCH_COUNTRY_GDP_FAILURE} from '../constants';
+    FETCH_COUNTRY_GDP_FAILURE,
+    SET_COUNTRY_GDP
+} from '../constants';
+
+
+export function setCountryGdp(iso2Code) {
+    return {
+        type: SET_COUNTRY_GDP,
+        country: iso2Code
+    }
+};
 
 export function fetchCountryRequest() {
     return {

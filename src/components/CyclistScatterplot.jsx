@@ -16,7 +16,6 @@ import { svg_dimensions } from '../constants';
 class CyclistScatterplot extends Component {
     constructor(props) {
         super(props);
-
     }
     componentDidMount()
     {

@@ -17,7 +17,7 @@ class App extends Component {
         super(props);
 
         this.state = {
-            sidebarOpen: false
+            sidebarOpen: true
         }
 
         this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
@@ -47,24 +47,21 @@ class App extends Component {
 
     }
 
-    onCountrySelectedForGdp = (country) => {
-        this.props.fetchCountryGdp(country, intervalDateGdp);
-    }
     render() {
         return (
             <Router>
                 <div className="App">
-                    <div className="menu" >
+                    <div className="abcmenu" >
                         <Link to='/'>Temperature</Link> {" | "}
                         <Link  to='/gdp'>Gdp</Link> {" | "}
                         <Link  to='/cyclist'>Cyclist</Link>
+                    </div>
+                    <div>
+                        <Route exact path='/' component={ClimatHeatMap} />
+                        <Route path='/cyclist' component={CyclistScatterplot}/>
+                        <Route path='/gdp' component={GdpBarChart}/>
+                    </div>
                 </div>
-                <div>
-                    <Route exact path='/' component={ClimatHeatMap} />
-                    <Route path='/cyclist' component={CyclistScatterplot}/>
-                    <Route path='/gdp' component={GdpBarChart}/>
-                </div>
-            </div>
         </Router>);
     }
 }

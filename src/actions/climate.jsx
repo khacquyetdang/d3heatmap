@@ -1,5 +1,17 @@
 import * as webapi  from '../api';
-import { FETCH_TEMPRATURE_REQUEST, FETCH_TEMPRATURE_SUCCESS, FETCH_TEMPRATURE_ERROR } from '../constants';
+import { FETCH_TEMPRATURE_REQUEST,
+    FETCH_TEMPRATURE_SUCCESS,
+    FETCH_TEMPRATURE_ERROR,
+    SET_COUNTRY_TEMEPRATURE
+} from '../constants';
+
+
+export function setCountryTemperature(iso3Code) {
+    return {
+        type: SET_COUNTRY_TEMEPRATURE,
+        country: iso3Code
+    }
+};
 
 export function fetchTempratureRequest() {
     return {

@@ -13,21 +13,12 @@ class Controls extends Component {
             disabled: false,
             searchable: true,
             clearable: true,
-            selectValue: 'FR',
+            selectValue: this.props.selectValue,
             isCountriesFetching : this.props.isCountriesFetching,
             countriesOptions : this.props.countriesOptions,
         };
     }
 
-    setCountryOptions = () => {
-        var countriesOptions = this.props.countries.map((country) => {
-            return { value : country.iso2Code,
-                label : country.name };
-            }
-        );
-        console.log("countriesOptions ", countriesOptions);
-        return countriesOptions;
-    }
     componentWillReceiveProps(nextProps)
     {
         console.log("Controls componentWillReceiveProps : ", nextProps);
@@ -37,8 +28,7 @@ class Controls extends Component {
         this.props = nextProps;
 
         this.setState({ isCountriesFetching: this.props.isCountriesFetching,
-            countriesOptions : this.props.countriesOptions,
-            selectValue: 'FR'}
+            countriesOptions : this.props.countriesOptions}
         );
     }
 
@@ -48,14 +38,6 @@ class Controls extends Component {
         if (length > 10) return 'success';
         else if (length > 5) return 'warning';
         else if (length > 0) return 'error';
-    }
-
-    handleChange = (e) => {
-        this.setState({ value: e.target.value });
-    }
-
-    logChange = (val) => {
-        console.log("Selected: " + JSON.stringify(val));
     }
 
     updateValue = (newValue) => {
@@ -96,12 +78,11 @@ class Controls extends Component {
 
 function mapStateToProps(state)
 {
-    const { countries, countriesOptions, isCountriesFetching, countryGdp } = state;
+    const { countriesOptions, isCountriesFetching } = state;
     return {
-        countries,
         countriesOptions,
         isCountriesFetching,
-        countryGdp
+
     }
 }
-export default connect(mapStateToProps) (Controls);
+export default connect(mapStateToProps, null) (Controls);

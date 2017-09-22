@@ -29,6 +29,8 @@ export function fetchCountryData() {
 }
 
 export function fetchCountryGDP(countryId, intervalDate, page) {
+
+
     var urlCountryGdp = 'https://api.worldbank.org/v2/countries/' + countryId + '/indicators/NY.GDP.MKTP.CD/?date=' + intervalDate.start +  ":"
     + intervalDate.end + '&format=json' + '&page=' + "&per_page=1000";
     console.log('urlCountryGdp : ', urlCountryGdp);
@@ -60,12 +62,28 @@ export function fetchCyclistData() {
 
 
 export function fetchTemperatureData(ISO3Country, startYear, endYear) {
-    var urlTemperatureData = `http://climatedataapi.worldbank.org/climateweb/rest/v1/country/mavg/tas/${startYear}/${endYear}/${ISO3Country}.JSON`;
-    return fetch(urlTemperatureData, myInit)
-    .then((response) => response.json()).then((responseJson) => {
-        console.log("result fetchTemperatureData", urlTemperatureData);
-        console.log(responseJson);
-        return responseJson;
+    var allPairDate = [{ start: 1920, end: 1939},
+        { start: 1940, end: 1959},
+        { start: 1960, end: 1979},
+        { start: 1980, end: 1999}];
+
+    var urlArr = allPairDate.map(pair => {
+        var startYear = pair.start;
+        var endYear = pair.end;
+        return `http://climatedataapi.worldbank.org/climateweb/rest/v1/country/mavg/tas/${startYear}/${endYear}/${ISO3Country}.JSON`;
+    });
+
+    const grabContent = url => fetch(url)
+    .then(res => res.json());
+
+    return Promise
+    .all(urlArr.map((url) => grabContent(url)))
+    .then((contentArr) => {
+        console.log(`Urls ${urlArr} were grabbed`);
+        var contentJsonArr = contentArr.reduce((res, content) => {
+            return res.concat(content);
+        }, []);
+        return contentJsonArr;
     })
     .catch((error) => {
         console.error(error);
