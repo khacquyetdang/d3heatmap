@@ -30,6 +30,13 @@ export const svg_dimensions = {
     height : 500,
 }
 
+
+export const svg_dimensions_climat = {
+    margin : {top: 5, right: 100, bottom: 50, left: 60},
+    width :960,
+    height : 500,
+}
+
 export const intervalDateGdp = {
     start:'1960',
     end:'2017'

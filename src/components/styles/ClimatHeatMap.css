@@ -14,6 +14,18 @@
   font-size: 25px;
   font-weight: bold; }
 
+.TitleContainer {
+  margin: 10px; }
+
+.TitleSVG {
+  font-size: 32px; }
+
+.DateTitleSVG {
+  font-size: 18px; }
+
+.DescriptionSVG {
+  font-size: 12px; }
+
 @media only screen and (max-width: 1024px) {
   svg {
     width: 100%;

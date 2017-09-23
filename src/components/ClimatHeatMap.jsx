@@ -39,7 +39,6 @@ class ClimatHeatMap extends Component {
 
     onCountrySelectedForTemperature = (country) => {
         this.props.setCountryTemperature(country);
-        this.props.fetchTemperature(country, 1980, 1999);
     }
 
 

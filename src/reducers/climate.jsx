@@ -24,25 +24,16 @@ export function temperature(state = {}, action) {
             {
                 return state;
             }
-            /*
-            if (state.ISO3Country === undefined)
-            {
-                return Object.assign({}, state, {
-                    ISO3Country: { periode : action.response }
-                });
-            }
-            else {
-                Object.assign({}, state, {
-                    ISO3Country: { periode : action.response }
-                });
-            }*/
-            var temperatureForCountry = {};
 
-            temperatureForCountry[action.ISO3Country]= action.response;
-            return Object.assign({},
-                state,
-                temperatureForCountry,
-            );
+            var temperatureByCountry = action.response.data.reduce((accu, item) => {
+                if (accu[item.Country] === undefined || accu[item.Country] === null)
+                {
+                    accu[item.Country] = [];
+                }
+                accu[item.Country].push(item);
+                return accu;
+            }, {});
+            return temperatureByCountry;
         }
         default: {
             return state;

@@ -11,7 +11,7 @@ import moment from 'moment';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/ClimatHeatMap.css';
 import { fetchTemperature } from '../actions';
-import { svg_dimensions } from '../constants';
+import { svg_dimensions_climat as svg_dimensions } from '../constants';
 import range  from 'lodash/range';
 class HeatMap extends Component {
     constructor(props) {
@@ -59,25 +59,24 @@ class HeatMap extends Component {
 
         const { temperature } = this.props;
 
-        if (this.props.isTemperatureFetching || temperature === undefined
-            || temperature.length === 0)
-            {
-                return ;
-            }
-            // setup x
-            //var minYear = temperature[0].year;
-            var minYear = 1920;
+        if (this.props.isTemperatureFetching) {
+            this.renderLoading();
+            return;
+        }
+        if (temperature === undefined
+            || temperature.length === 0
+        ){
+            this.createBarChartEmptyData();
+            return;
+        }
+        // setup x
+        //var minYear = temperature[0].year;
 
+        var colors = ["#5300ff","#0033ff","#00ffcc",
+        "#00ff33","#99ff00","#ffff00",
+        "#ffcc00","#ff9900","#ff5400", "#ff0000"]; // alternatively colorbrewer.YlGnBu[9]
 
-            var maxYear = temperature[temperature.length - 1].year;
-
-            var colorDoping = "#C70039";
-            var colorNoDoping = "#33FFB5";
-            var colors = ["#5300ff","#0033ff","#00ffcc",
-            "#00ff33","#99ff00","#ffff00",
-            "#ffcc00","#ff9900","#ff5400", "#ff0000"]; // alternatively colorbrewer.YlGnBu[9]
-
-            var months = [
+        var months = [
             "December",
             "November",
             "October",
@@ -90,150 +89,231 @@ class HeatMap extends Component {
             "March",
             "February",
             "January"
-            ];
+        ];
+        months.reverse();
 
 
 
-            var yearsArr = range(minYear, maxYear);
-            console.log("yearsArr ", yearsArr);
+        var yearsArr = range(this.props.minYear, this.props.maxYear + 1);
 
-            var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
-            var height = svg_dimensions.height - svg_dimensions.margin.top - svg_dimensions.margin.bottom;
-            var gridSize = Math.floor(width / yearsArr.length);
+        var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
+        var height = svg_dimensions.height - svg_dimensions.margin.top - svg_dimensions.margin.bottom;
+        var gridSize = Math.floor(width / yearsArr.length);
 
-            var xScale = scaleBand().rangeRound([0, width]).paddingInner(0.05),
-            yScale = scaleBand().range([height, 0]).paddingInner(0.05),
-            zScale = scaleQuantile().range(colors);
+        var xScale = scaleBand().range([0, width]).paddingInner(0.05).paddingOuter(1),
+        yScale = scaleBand().range([height, 0]).paddingInner(0.05),
+        zScale = scaleQuantile().range(colors);
 
-            xScale.domain(temperature.map(function(d) { return d.year; }));
-            yScale.domain(temperature.map(function(d) { return d.month; }));
-            zScale.domain([0, max(temperature, function(d) { return d.temperature; })]);
-
-
-            var yAxis = axisLeft(yScale);
-            var xAxis = axisBottom(xScale);
+        xScale.domain(temperature.map(function(d) { return d.Year; }));
+        yScale.domain(temperature.map(function(d) { return d.Month; }));
+        zScale.domain([0, max(temperature, function(d) { return d.tas; })]);
 
 
-            var tip = d3tip()
-            .attr('class', 'd3-tip')
-            .offset([5, 0])
-            .html(function(d) {
-                var res =   "<div class=\"tooltipDot\"> <div> " + d.year + " - " + months[d.month - 1] +
-                "  </div><div> Temperature : " + Number(d.temperature).toFixed(3)+ " °C </div>";
-
-                res = res + "</div>";
-                return res;
-            });
-
-            const node = this.node;
-
-            var mainNode = select(node);
-
-            mainNode.selectAll("*").remove();
+        var yAxis = axisLeft(yScale);
+        var xAxis = axisBottom(xScale);
 
 
-            mainNode = mainNode.append("g")
-            .attr("transform", "translate(" + svg_dimensions.margin.left + "," + svg_dimensions.margin.top + ")");
+        var tip = d3tip()
+        .attr('class', 'd3-tip')
+        .offset([5, 0])
+        .html(function(d) {
+            var res =   "<div class=\"tooltipDot\"> <div> " + d.Year + " - " + months[d.Month - 1] +
+            "  </div><div> Temperature : " + Number(d.tas).toFixed(1)+ " °C </div>";
+
+            res = res + "</div>";
+            return res;
+        });
+
+        const node = this.node;
+
+        var mainNode = select(node);
+
+        mainNode.selectAll("*").remove();
+
+        //var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
+        var width = svg_dimensions.width - 100;
+        var legend = mainNode.selectAll(".legend")
+        .data(zScale.quantiles(), function(d) {
+            console.log("legend", d);
+            return d; }
+        ).enter().append("g")
+        .attr("class", "legend")
+        .attr("transform", function(d, i) { return "translate(" + (width) + "," + (20 + i * 20) + ")"; });
 
 
-            mainNode.append("g")
-            .attr("class", "axis axis--x")
-            .attr("transform", "translate(0," + height + ")")
-            .call(xAxis);
+        legend.append("rect")
+        .attr("x", 20)
+        .attr("y", 10)
+        .attr("width", 20)
+        .attr("height", 20)
+        .style("fill", zScale);
 
-            mainNode.append("g")
-            .attr("class", "axis axis--y")
-            .call(yAxis.ticks(10, ",f"));
+        legend.append("text")
+        .attr("x", 45)
+        .attr("y", 20)
+        .style("font-size", "10")
+        .attr("dy", "0.35em")
+        .text(function(tas){return  ">=" + Number(tas).toFixed(1)});
 
-            mainNode.selectAll(".tile")
-            .data(temperature)
-            .enter().append("rect")
-            .attr("class", "tile")
-            .attr("x", function(d) {
-                return xScale(d.year);
-            })
-            .attr("y", function(d) {
-                return yScale(d.month);
-            })
-            .attr("width", xScale.bandwidth())
-            .attr("height",  yScale.bandwidth())
-            .style("fill", function(d) { return zScale(d.temperature); })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
 
-            mainNode.call(tip);
 
-            var xAxis = mainNode.select(".axis--x");
-            var textXAxis = xAxis.selectAll(".tick text");
+        mainNode = mainNode.append("g")
+        .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")");
 
-            var steps = 3;
-            textXAxis.attr("class", function(d,i) {
-                var removed = (i%steps) !== 0;
-                if(removed) {
-                    select(this).remove();
-                }
-            });
 
-            var yAxis = mainNode.select(".axis--y");
-            var textsYAxis = yAxis.selectAll(".tick text");
+        mainNode.append("g")
+        .attr("class", "axis axis--x")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
 
-            textsYAxis.attr("class", function(d,i) {
-                select(this).text(months[d - 1]);
-            });
-        }
+        mainNode.append("g")
+        .attr("class", "axis axis--y")
+        .call(yAxis.ticks(10, ",f"));
 
-        renderLoading = () =>
-        {
-            if (this.props.isTemperatureFetching === true
-            ) {
+        mainNode.selectAll(".tile")
+        .data(temperature)
+        .enter().append("rect")
+        .attr("class", "tile")
+        .attr("x", function(d) {
+            return xScale(d.Year);
+        })
+        .attr("y", function(d) {
+            return yScale(d.Month);
+        })
+        .attr("width", xScale.bandwidth())
+        //.attr("width", 10)
+        .attr("height",  yScale.bandwidth())
+        .style("fill", function(d) { return zScale(d.tas); })
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
-                return (
-                    <BounceLoader
-                        color={'#123abc'}
-                        loading={true}
-                        />
-                );
+
+        mainNode.call(tip);
+
+        var xAxis = mainNode.select(".axis--x");
+        var textXAxis = xAxis.selectAll(".tick text");
+
+        var steps = 5;
+        textXAxis.attr("class", function(d,i) {
+            var removed = (i%steps) !== 0;
+            if(removed) {
+                select(this).remove();
             }
-        }
+        });
 
-        render() {
+        var yAxis = mainNode.select(".axis--y");
+        var textsYAxis = yAxis.selectAll(".tick text");
 
-            var margin = svg_dimensions.margin;
-            var width= svg_dimensions.width;
-            var height = svg_dimensions.height;
-            var widthWithMargin = width + margin.left + margin.right;
-            var heightWithMargin = height + margin.top + margin.bottom;
-
-            return (
-                <div className="BarChart">
-                    {
-                        this.renderLoading()
-                    }
-                    <svg id="chart"
-                        width={widthWithMargin}
-                        height={heightWithMargin}
-                        viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
-                        preserveAspectRatio="xMidYMid meet"
-                        xmlns="http://www.w3.org/2000/svg"
-                        ref={node => this.node = node}>
-                    </svg>
-                </div>
-            );
-        }
+        textsYAxis.attr("class", function(d,i) {
+            select(this).text(months[d - 1]);
+        });
     }
 
-    function mapStateToProps(state)
+    renderTitle = () =>
     {
-        console.log("Scatterplot mapStateToProps: ");
-        const {
-            countryTemperatureSelect,
-            temperature,
-            isTemperatureFetching,
-        } = state;
-
-        return {
-            isTemperatureFetching,
-            temperature : temperature[countryTemperatureSelect]
-        }
+        if (this.props.countryName != "")
+        {
+            return (
+                <div className="TitleContainer">
+                    <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
+                    <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
+                    <div className='DescriptionSVG'>Temperatures are in Celsius.
+                        The data source is from <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
+                        The World Bank Climate Change Knowledge Portal</a>
+                </div>
+            </div>
+        );
     }
-    export default connect(mapStateToProps, {fetchTemperature}) (HeatMap);
+}
+renderLoading = () =>
+{
+    if (this.props.isTemperatureFetching === true
+    ) {
+
+        return (
+            <BounceLoader
+                color={'#123abc'}
+                loading={true}
+                />
+        );
+    }
+}
+
+
+createBarChartEmptyData = () => {
+
+    const node = this.node;
+
+    var mainNode = select(node);
+
+    mainNode.selectAll("*").remove();
+
+    mainNode.attr("width", svg_dimensions.width)
+    .attr("height", svg_dimensions.height)
+    .attr("viewBox", "0 0 " + svg_dimensions.width + " " + svg_dimensions.height)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+
+    mainNode.append("text")
+    .attr("y", svg_dimensions.height / 2)
+    .attr("x", svg_dimensions.width / 3)
+    .attr("class", "labelTitle")
+    .attr("font-size", 30)
+    .attr("fill", "red")
+    .text("Data is not availaible for this country.");
+}
+
+render() {
+
+    var margin = svg_dimensions.margin;
+    var width= svg_dimensions.width;
+    var height = svg_dimensions.height;
+    var widthWithMargin = width + margin.left + margin.right;
+    var heightWithMargin = height + margin.top + margin.bottom;
+
+    return (
+        <div className="BarChart">
+            {
+                this.renderLoading()
+            }
+            {
+                this.renderTitle()
+            }
+            <svg id="chart"
+                width={widthWithMargin}
+                height={heightWithMargin}
+                viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
+                preserveAspectRatio="xMidYMid meet"
+                xmlns="http://www.w3.org/2000/svg"
+                ref={node => this.node = node}>
+            </svg>
+        </div>
+    );
+}
+}
+
+function mapStateToProps(state)
+{
+    const {
+        countryTemperatureSelect,
+        temperature,
+        isTemperatureFetching,
+        countriesById
+    } = state;
+
+    var countryName = countriesById[countryTemperatureSelect] != undefined ? countriesById[countryTemperatureSelect].label : "";
+    var temperatureForCountry = temperature[countryTemperatureSelect];
+    var minYear = temperatureForCountry === undefined ? 1901 : min(temperatureForCountry, function(d) { return d.Year; });
+
+
+    var maxYear = temperatureForCountry === undefined ? 2015 :max(temperatureForCountry, function(d) { return d.Year; });
+
+
+    return {
+        isTemperatureFetching,
+        countryName,
+        minYear,
+        maxYear,
+        temperature : temperatureForCountry
+    }
+}
+export default connect(mapStateToProps, {fetchTemperature}) (HeatMap);
