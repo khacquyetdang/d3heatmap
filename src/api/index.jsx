@@ -80,10 +80,29 @@ export function fetchTemperatureData(ISO3Country, startYear, endYear) {
     .all(urlArr.map((url) => grabContent(url)))
     .then((contentArr) => {
         console.log(`Urls ${urlArr} were grabbed`);
-        var contentJsonArr = contentArr.reduce((res, content) => {
+        console.log(contentArr);
+        var contentJsonArr = contentArr.reduce((res, content, index) => {
             return res.concat(content);
         }, []);
-        return contentJsonArr;
+        console.log("arrayJson ");
+        console.log(contentJsonArr);
+
+        var startYear= 1920;
+        var contentJsonArrPlat = contentJsonArr.reduce((res, content, index) => {
+            var newContent = [];
+
+            content.monthVals.forEach((data, indexMonth) => {
+                var newData = {};
+                newData.year = startYear + index;
+                newData.month = indexMonth + 1;
+                newData.temperature = data;
+                newContent.push(newData);
+            });
+            console.log("index  : ", index, " year :", startYear + index)
+            return res.concat(newContent);
+        }, []);
+
+        return contentJsonArrPlat;
     })
     .catch((error) => {
         console.error(error);

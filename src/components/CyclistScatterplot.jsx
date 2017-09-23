@@ -175,7 +175,7 @@ class CyclistScatterplot extends Component {
             return d.Doping === "" ?  colorNoDoping : colorDoping;
         })
         .on('mouseover', tip.show)
-        .on('mouseout', tip.hide);;
+        .on('mouseout', tip.hide);
 
 
         gdots.append("text")

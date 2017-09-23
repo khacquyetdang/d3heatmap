@@ -24,7 +24,6 @@ export function temperature(state = {}, action) {
             {
                 return state;
             }
-            var periode = action.startYear + '-' + action.endYear;
             /*
             if (state.ISO3Country === undefined)
             {
@@ -38,9 +37,8 @@ export function temperature(state = {}, action) {
                 });
             }*/
             var temperatureForCountry = {};
-            temperatureForCountry[action.ISO3Country] = {};
 
-            temperatureForCountry[action.ISO3Country][periode] = action.response;
+            temperatureForCountry[action.ISO3Country]= action.response;
             return Object.assign({},
                 state,
                 temperatureForCountry,

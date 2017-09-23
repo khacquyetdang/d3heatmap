@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { connect } from 'react-redux';
-import { scaleLinear, scaleBand, scaleOrdinal } from 'd3-scale';
+import { scaleLinear, scaleBand, scaleQuantile } from 'd3-scale';
 import { max, min } from 'd3-array';
 import { select } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
@@ -12,7 +12,7 @@ import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/ClimatHeatMap.css';
 import { fetchTemperature } from '../actions';
 import { svg_dimensions } from '../constants';
-
+import range  from 'lodash/range';
 class HeatMap extends Component {
     constructor(props) {
         super(props);
@@ -57,54 +57,70 @@ class HeatMap extends Component {
 
     createHeatMap = () => {
 
-        return null;
-        const { cyclist } = this.props;
-        var data = cyclist;
-        // setup x
-        var minScore = min(data, function(d) {
-            return d.Seconds;
-        });
+        const { temperature } = this.props;
 
-        var maxScore = max(data, function(d) {
-            return d.Seconds;
-        });
-
-        var colorDoping = "#C70039";
-        var colorNoDoping = "#33FFB5";
-
-        var xValue = function(d) {
-            return (d.Seconds - minScore);}, // data -> value
-            xScale = scaleLinear().range([svg_dimensions.width - svg_dimensions.margin.left -  svg_dimensions.margin.right, 0]), // value -> display
-            xMap = function(d) { return xScale(xValue(d));}, // data -> display
-            xMapLabel = function(d) { return xScale(xValue(d)) + d.Name.length * 6;}, // data -> display
-
-            xAxis =  axisBottom(xScale);
-
-            // setup y
-            var yValue = function(d) {
-                return d.Place;
-            }, // data -> value
-            yScale = scaleLinear().range([0, svg_dimensions.height]), // value -> display
-            yMap = function(d) { return yScale(yValue(d));}, // data -> display
-            yMapLabel = function(d) { return yScale(yValue(d)) + 4;}, // data -> display
-
-            yAxis = axisLeft(yScale);
+        if (this.props.isTemperatureFetching || temperature === undefined
+            || temperature.length === 0)
+            {
+                return ;
+            }
+            // setup x
+            //var minYear = temperature[0].year;
+            var minYear = 1920;
 
 
+            var maxYear = temperature[temperature.length - 1].year;
+
+            var colorDoping = "#C70039";
+            var colorNoDoping = "#33FFB5";
+            var colors = ["#5300ff","#0033ff","#00ffcc",
+            "#00ff33","#99ff00","#ffff00",
+            "#ffcc00","#ff9900","#ff5400", "#ff0000"]; // alternatively colorbrewer.YlGnBu[9]
+
+            var months = [
+            "December",
+            "November",
+            "October",
+            "September",
+            "August",
+            "July",
+            "June",
+            "May",
+            "April",
+            "March",
+            "February",
+            "January"
+            ];
+
+
+
+            var yearsArr = range(minYear, maxYear);
+            console.log("yearsArr ", yearsArr);
+
+            var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
+            var height = svg_dimensions.height - svg_dimensions.margin.top - svg_dimensions.margin.bottom;
+            var gridSize = Math.floor(width / yearsArr.length);
+
+            var xScale = scaleBand().rangeRound([0, width]).paddingInner(0.05),
+            yScale = scaleBand().range([height, 0]).paddingInner(0.05),
+            zScale = scaleQuantile().range(colors);
+
+            xScale.domain(temperature.map(function(d) { return d.year; }));
+            yScale.domain(temperature.map(function(d) { return d.month; }));
+            zScale.domain([0, max(temperature, function(d) { return d.temperature; })]);
+
+
+            var yAxis = axisLeft(yScale);
+            var xAxis = axisBottom(xScale);
 
 
             var tip = d3tip()
             .attr('class', 'd3-tip')
             .offset([5, 0])
             .html(function(d) {
-                //var money = '$' + Math.ceil(d.value) + " Billion";
-                //return '<div className="tooltip">' + money + " date "+ d.date + "</div>";
-                var res =   "<div class=\"tooltipDot\"> <div> " + d.Name + " : " + d.Nationality +
-                "  </div><div> Year : " + d.Year + " , Time: " + d.Time + " </div>";
-                if (d.Doping !== "")
-                {
-                    res = res + "<br><div>" + d.Doping + " </div>";
-                }
+                var res =   "<div class=\"tooltipDot\"> <div> " + d.year + " - " + months[d.month - 1] +
+                "  </div><div> Temperature : " + Number(d.temperature).toFixed(3)+ " °C </div>";
+
                 res = res + "</div>";
                 return res;
             });
@@ -119,113 +135,56 @@ class HeatMap extends Component {
             mainNode = mainNode.append("g")
             .attr("transform", "translate(" + svg_dimensions.margin.left + "," + svg_dimensions.margin.top + ")");
 
-            // don't want dots overlapping axis, so add in buffer to data domain
 
-            xScale.domain([min(data, xValue), max(data, xValue) + 15]);
-            yScale.domain([min(data, yValue)-1, max(data, yValue) + 1]);
-
-            // x-axis
             mainNode.append("g")
-            .attr("class", "x axis x--axis")
-            .attr("transform", "translate(0," + svg_dimensions.height + ")")
-            .call(xAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("x", svg_dimensions.width / 3)
-            .attr("y", 55)
-            .style("text-anchor", "start")
-            .style("fill", "black")
-            .style("font-size", "18")
-            .text("Minutes Behind Fastest Time");
+            .attr("class", "axis axis--x")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
 
-            // y-axis
             mainNode.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append("text")
-            .attr("class", "label")
-            .attr("transform", "rotate(-90)")
-            .attr("y", - svg_dimensions.margin.left * 3 / 4.)
-            .attr("x", - svg_dimensions.width / 5)
-            .attr("dy", ".71em")
-            .style("text-anchor", "start")
-            .style("fill", "black")
-            .style("font-size", "18")
-            .text("Ranking");
+            .attr("class", "axis axis--y")
+            .call(yAxis.ticks(10, ",f"));
 
-
-            var gdots = mainNode.selectAll("g.dot")
-            .data(data)
-            .enter().append("g");
-
-            gdots.append("circle")
-            .attr("class", "dot")
-            .attr("r", 4.5)
-            .attr("cx", xMap)
-            .attr("cy", yMap)
-            .style("fill", function(d) {
-                //console.log()
-                return d.Doping === "" ?  colorNoDoping : colorDoping;
+            mainNode.selectAll(".tile")
+            .data(temperature)
+            .enter().append("rect")
+            .attr("class", "tile")
+            .attr("x", function(d) {
+                return xScale(d.year);
             })
+            .attr("y", function(d) {
+                return yScale(d.month);
+            })
+            .attr("width", xScale.bandwidth())
+            .attr("height",  yScale.bandwidth())
+            .style("fill", function(d) { return zScale(d.temperature); })
             .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);;
-
-
-            gdots.append("text")
-            .attr("y", yMapLabel)
-            .attr("x", xMapLabel)
-            .style("text-anchor", "end")
-            .style("fill", "black")
-            .style("font-size", "10")
-            .text(function(d) {
-                return d.Name;
-            });
+            .on('mouseout', tip.hide);
 
             mainNode.call(tip);
 
+            var xAxis = mainNode.select(".axis--x");
+            var textXAxis = xAxis.selectAll(".tick text");
 
-
-            var legendData = ["No doping allegations", "Riders with doping allegations"];
-            var colorArray = [colorNoDoping, colorDoping];
-            var color = scaleOrdinal().domain(legendData).range(colorArray);
-            console.log("color scale ordinal : ", color);
-            var legend = mainNode.selectAll(".legend")
-            .data(legendData)
-            .enter().append("g")
-            .attr("class", "legend")
-            .attr("transform", function(d, i) {
-                return "translate(0," + i * 20 + ")";
+            var steps = 3;
+            textXAxis.attr("class", function(d,i) {
+                var removed = (i%steps) !== 0;
+                if(removed) {
+                    select(this).remove();
+                }
             });
 
-            // draw legend colored rectangles
-            legend.append("rect")
-            .attr("x", svg_dimensions.width - 18)
-            .attr("y", svg_dimensions.height * 2 / 3 )
-            .attr("width", 18)
-            .attr("height", 18)
-            .style("fill", color);
+            var yAxis = mainNode.select(".axis--y");
+            var textsYAxis = yAxis.selectAll(".tick text");
 
-            // draw legend text
-            legend.append("text")
-            .attr("x", svg_dimensions.width - 24)
-            .attr("y", svg_dimensions.height * 2 / 3 + 10)
-            .attr("dy", ".35em")
-            .style("text-anchor", "end")
-            .text(function(d) {
-                return d;
+            textsYAxis.attr("class", function(d,i) {
+                select(this).text(months[d - 1]);
             });
-
-            var xAxis = mainNode.select(".x--axis");
-            var ticks = xAxis.selectAll(".tick text");
-
-            ticks.attr("class", function(d,i) {
-                select(this).text(moment.utc(d * 1000).format("mm:ss"));
-            });
-
         }
+
         renderLoading = () =>
         {
-            if (this.props.isCyclistFetching === true
+            if (this.props.isTemperatureFetching === true
             ) {
 
                 return (
@@ -247,9 +206,8 @@ class HeatMap extends Component {
 
             return (
                 <div className="BarChart">
-                    <h1>Heatmap</h1>
                     {
-                        //this.renderLoading()
+                        this.renderLoading()
                     }
                     <svg id="chart"
                         width={widthWithMargin}
@@ -268,13 +226,14 @@ class HeatMap extends Component {
     {
         console.log("Scatterplot mapStateToProps: ");
         const {
-            cyclist,
-            isCyclistFetching,
+            countryTemperatureSelect,
+            temperature,
+            isTemperatureFetching,
         } = state;
 
         return {
-            cyclist,
-            isCyclistFetching
+            isTemperatureFetching,
+            temperature : temperature[countryTemperatureSelect]
         }
     }
     export default connect(mapStateToProps, {fetchTemperature}) (HeatMap);
