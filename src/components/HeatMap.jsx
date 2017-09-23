@@ -106,7 +106,11 @@ class HeatMap extends Component {
 
         xScale.domain(temperature.map(function(d) { return d.Year; }));
         yScale.domain(temperature.map(function(d) { return d.Month; }));
-        zScale.domain([0, max(temperature, function(d) { return d.tas; })]);
+
+        var minTemp = min(temperature, function(d) { return d.tas; });
+        var maxTemp = max(temperature, function(d) { return d.tas; });
+
+        zScale.domain([0, maxTemp]);
 
 
         var yAxis = axisLeft(yScale);
@@ -133,7 +137,7 @@ class HeatMap extends Component {
         //var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
         var width = svg_dimensions.width - 100;
         var legend = mainNode.selectAll(".legend")
-        .data(zScale.quantiles(), function(d) {
+        .data([minTemp].concat(zScale.quantiles()), function(d) {
             console.log("legend", d);
             return d; }
         ).enter().append("g")
