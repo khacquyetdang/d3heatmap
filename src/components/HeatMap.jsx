@@ -9,6 +9,7 @@ import d3tip from 'd3-tip';
 import browser from 'detect-browser';
 import moment from 'moment';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
+import _ from 'lodash';
 import './styles/ClimatHeatMap.css';
 import { fetchTemperature } from '../actions';
 import { svg_dimensions_climat as svg_dimensions } from '../constants';
@@ -59,12 +60,14 @@ class HeatMap extends Component {
 
         const { temperature } = this.props;
 
-        if (this.props.isTemperatureFetching) {
+
+        if (this.props.isTemperatureFetching || this.props.isCountriesFetching
+        || this.props.countryName === "" || _.isEmpty(this.props.allTemperature)) {
             this.renderLoading();
             return;
         }
-        if (temperature === undefined
-            || temperature.length === 0
+        if ((temperature === undefined
+            || temperature.length === 0)
         ) {
             this.createBarChartEmptyData();
             return;
@@ -306,6 +309,10 @@ render() {
                 this.renderTitle()
             }
             <svg id="heatmapchart"
+                width={widthWithMargin}
+                height={heightWithMargin}
+                viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
+                preserveAspectRatio="xMidYMid meet"
                 xmlns="http://www.w3.org/2000/svg"
                 ref={node => this.node = node}>
             </svg>
@@ -314,10 +321,6 @@ render() {
 }
 }
 /** It is better to set these attribute in the code
-width={widthWithMargin}
-height={heightWithMargin}
-viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
-preserveAspectRatio="xMidYMid meet"
 */
 function mapStateToProps(state)
 {
@@ -325,6 +328,7 @@ function mapStateToProps(state)
         countryTemperatureSelect,
         temperature,
         isTemperatureFetching,
+        isCountriesFetching,
         countriesById
     } = state;
 
@@ -339,10 +343,12 @@ function mapStateToProps(state)
 
     return {
         isTemperatureFetching,
+        isCountriesFetching,
         countryName,
         minYear,
         maxYear,
         meanTemp,
+        allTemperature : temperature,
         temperature : temperatureForCountry
     }
 }
