@@ -52,7 +52,7 @@ class App extends Component {
         return (
             <Router>
                 <div className="App">
-                    <div className="abcmenu" >
+                    <div className="menu" >
                         <Link to='/'>Temperature</Link> {" | "}
                         <Link  to='/gdp'>Gdp</Link> {" | "}
                         <Link  to='/cyclist'>Cyclist</Link>

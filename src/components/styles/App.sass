@@ -1,3 +1,5 @@
+@import  './colors.sass'
+
 body
   font: 100% Helvetica, sans-serif
   color: #333
@@ -11,7 +13,6 @@ body
     display: flex
     flex-direction: column
     align-items: center
-    padding-top: 10px
 .AppContainer
     margin: 5px
     display: flex
@@ -20,6 +21,15 @@ body
     justify-content: center
 .menu
     font-size: 18px
+    background-color: $background-color
+    color: $text-color !important
+    padding: 5px 20px 5px 20px
+    height: 30px
+    width: 100%
+    width: 100vw
+    a
+        color: $text-color !important
+
 .description
     font-size: 12px
     margin: 10px 100px 20px 100px
