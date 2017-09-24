@@ -72,7 +72,7 @@ class HeatMap extends Component {
         // setup x
         //var minYear = temperature[0].year;
 
-        var colors = ["#2824d8","#3ea0fd", "#e0ffff", "#fefebf", "#fee099", "#ffad72", "#f96d5d", "#d82631", "#a50a21", "#870417"];
+        var colors = ["#089de8","#06dbd6", "#05ee9c", "#07f588", "#03fe32", "#9efe06", "#e6fd06", "#feb704", "#fd6c07", "#fd5405"];
         var months = [
             "December",
             "November",
