@@ -110,7 +110,7 @@ class HeatMap extends Component {
         var minTemp = min(temperature, function(d) { return d.tas; });
         var maxTemp = max(temperature, function(d) { return d.tas; });
 
-        zScale.domain([0, maxTemp]);
+        zScale.domain([minTemp, maxTemp]);
 
 
         var yAxis = axisLeft(yScale);
@@ -134,28 +134,29 @@ class HeatMap extends Component {
 
         mainNode.selectAll("*").remove();
 
-        //var width = svg_dimensions.width - svg_dimensions.margin.left - svg_dimensions.margin.right;
-        var width = svg_dimensions.width - 100;
+        var widthLegendBar = 35;
+        var heightLegendBar = 10;
+        var dataLegend = [minTemp].concat(zScale.quantiles());
         var legend = mainNode.selectAll(".legend")
-        .data([minTemp].concat(zScale.quantiles()), function(d) {
+        .data(dataLegend, function(d) {
             console.log("legend", d);
             return d; }
         ).enter().append("g")
         .attr("class", "legend")
-        .attr("transform", function(d, i) { return "translate(" + (width) + "," + (20 + i * 20) + ")"; });
+        .attr("transform", function(d, i) { return "translate(" + ((width) - (dataLegend.length - i) * widthLegendBar)  + "," + (height + 20)+  ")"; });
 
 
         legend.append("rect")
-        .attr("x", 20)
+        .attr("x", widthLegendBar)
         .attr("y", 10)
-        .attr("width", 20)
-        .attr("height", 20)
+        .attr("width", widthLegendBar)
+        .attr("height", heightLegendBar)
         .style("fill", zScale);
 
         legend.append("text")
-        .attr("x", 45)
-        .attr("y", 20)
-        .style("font-size", "10")
+        .attr("x", widthLegendBar)
+        .attr("y", heightLegendBar * 3)
+        .style("font-size", "9")
         .attr("dy", "0.35em")
         .text(function(tas){return  ">=" + Number(tas).toFixed(1)});
 
