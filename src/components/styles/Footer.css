@@ -1,0 +1,13 @@
+.FooterContainer {
+  width: 100%;
+  flex-direction: row;
+  background-color: #CCD1D1;
+  padding: 10px 20px 10px 20px;
+  height: 30px;
+  justify-content: center; }
+
+.copyright {
+  text-align: center;
+  style: strong;
+  font-weight: bold;
+  color: #186A3B; }

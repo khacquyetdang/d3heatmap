@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import ClimatHeatMap from './ClimatHeatMap'
 import GdpBarChart from './GdpBarChart';
 import Controls from './Controls';
+import Footer from './Footer';
 import CyclistScatterplot from './CyclistScatterplot';
 import './styles/App.css';
 import { HashRouter as Router, Route, Link } from 'react-router-dom';
@@ -61,6 +62,7 @@ class App extends Component {
                         <Route path='/cyclist' component={CyclistScatterplot}/>
                         <Route path='/gdp' component={GdpBarChart}/>
                     </div>
+                    <Footer />
                 </div>
         </Router>);
     }
