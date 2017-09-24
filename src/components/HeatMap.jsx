@@ -161,8 +161,11 @@ class HeatMap extends Component {
         .text(function(tas){return  ">=" + Number(tas).toFixed(1)});
 
 
-
-        mainNode = mainNode.append("g")
+        mainNode = mainNode.attr("width", svg_dimensions.width)
+        .attr("height", svg_dimensions.height)
+        .attr("viewBox", "0 0 " + svg_dimensions.width + " " + svg_dimensions.height)
+        .attr("preserveAspectRatio", "xMidYMid meet")
+        .append("g")
         .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")");
 
 
@@ -227,12 +230,12 @@ class HeatMap extends Component {
                     <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
                     <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
                     <div className='DescriptionSVG'>Temperatures are in Celsius. The mean temperature over these years is { this.props.meanTemp }.<br/>
-                        The data source is from <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
-                        The World Bank Climate Change Knowledge Portal</a>
-                </div>
+                    The data source is from <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
+                    The World Bank Climate Change Knowledge Portal</a>
             </div>
-        );
-    }
+        </div>
+    );
+}
 }
 renderLoading = () =>
 {
@@ -280,18 +283,14 @@ render() {
     var heightWithMargin = height + margin.top + margin.bottom;
 
     return (
-        <div className="BarChart">
+        <div className="HeatMapContainer">
             {
                 this.renderLoading()
             }
             {
                 this.renderTitle()
             }
-            <svg id="chart"
-                width={widthWithMargin}
-                height={heightWithMargin}
-                viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
-                preserveAspectRatio="xMidYMid meet"
+            <svg id="heatmapchart"
                 xmlns="http://www.w3.org/2000/svg"
                 ref={node => this.node = node}>
             </svg>
@@ -299,7 +298,12 @@ render() {
     );
 }
 }
-
+/** It is better to set these attribute in the code 
+width={widthWithMargin}
+height={heightWithMargin}
+viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
+preserveAspectRatio="xMidYMid meet"
+*/
 function mapStateToProps(state)
 {
     const {

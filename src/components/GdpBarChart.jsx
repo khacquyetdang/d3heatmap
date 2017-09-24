@@ -5,7 +5,6 @@ import Controls from './Controls';
 import CyclistScatterplot from './CyclistScatterplot';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import './styles/App.css';
-import 'react-tabs/style/react-tabs.css';
 import { setCountryGdp, fetchCountries, fetchCountryGdp } from '../actions'
 import { intervalDateGdp } from '../constants';
 
