@@ -169,11 +169,29 @@ class HeatMap extends Component {
         mainNode.append("g")
         .attr("class", "axis axis--x")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("x", svg_dimensions.width / 3)
+        .attr("y", 40)
+        .style("text-anchor", "start")
+        .style("fill", "#2E4053")
+        .style("font-size", "20")
+        .text("Years");;
 
         mainNode.append("g")
         .attr("class", "axis axis--y")
-        .call(yAxis.ticks(10, ",f"));
+        .call(yAxis.ticks(10, ",f"))
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("y", - svg_dimensions.margin.left + 10)
+        .attr("x", - svg_dimensions.width / 5)
+        .attr("dy", ".71em")
+        .style("text-anchor", "start")
+        .style("fill", "#2E4053")
+        .style("font-size", "20")
+        .text("Months");;
 
         mainNode.selectAll(".tile")
         .data(temperature)

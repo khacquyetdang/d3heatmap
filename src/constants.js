@@ -32,7 +32,7 @@ export const svg_dimensions = {
 
 
 export const svg_dimensions_climat = {
-    margin : {top: 5, right: 10, bottom: 60, left: 60},
+    margin : {top: 5, right: 10, bottom: 60, left: 90},
     width :960,
     height : 500,
 }
