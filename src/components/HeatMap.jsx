@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { BounceLoader } from 'react-spinners';
 import { connect } from 'react-redux';
 import { scaleLinear, scaleBand, scaleQuantile } from 'd3-scale';
-import { max, min } from 'd3-array';
+import { max, min, mean } from 'd3-array';
 import { select } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
 import d3tip from 'd3-tip';
@@ -65,7 +65,7 @@ class HeatMap extends Component {
         }
         if (temperature === undefined
             || temperature.length === 0
-        ){
+        ) {
             this.createBarChartEmptyData();
             return;
         }
@@ -122,7 +122,7 @@ class HeatMap extends Component {
         .offset([5, 0])
         .html(function(d) {
             var res =   "<div class=\"tooltipDot\"> <div> " + d.Year + " - " + months[d.Month - 1] +
-            "  </div><div> Temperature : " + Number(d.tas).toFixed(1)+ " °C </div>";
+            "  </div><div> Temperature : " + Number(d.tas).toFixed(1) + " °C </div>";
 
             res = res + "</div>";
             return res;
@@ -216,13 +216,17 @@ class HeatMap extends Component {
 
     renderTitle = () =>
     {
-        if (this.props.countryName != "")
+        const { temperature } = this.props;
+
+        if (this.props.countryName !== ""
+        && temperature !== undefined
+        && temperature.length !== 0)
         {
             return (
                 <div className="TitleContainer">
                     <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
                     <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
-                    <div className='DescriptionSVG'>Temperatures are in Celsius.
+                    <div className='DescriptionSVG'>Temperatures are in Celsius. The mean temperature over these years is { this.props.meanTemp }.<br/>
                         The data source is from <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
                         The World Bank Climate Change Knowledge Portal</a>
                 </div>
@@ -310,7 +314,8 @@ function mapStateToProps(state)
     var minYear = temperatureForCountry === undefined ? 1901 : min(temperatureForCountry, function(d) { return d.Year; });
 
 
-    var maxYear = temperatureForCountry === undefined ? 2015 :max(temperatureForCountry, function(d) { return d.Year; });
+    var maxYear = temperatureForCountry === undefined ? 2015 : max(temperatureForCountry, function(d) { return d.Year; });
+    var meanTemp =  temperatureForCountry === undefined ? 0 : Number(mean(temperatureForCountry, function(d) { return d.tas;})).toFixed(2);
 
 
     return {
@@ -318,6 +323,7 @@ function mapStateToProps(state)
         countryName,
         minYear,
         maxYear,
+        meanTemp,
         temperature : temperatureForCountry
     }
 }
