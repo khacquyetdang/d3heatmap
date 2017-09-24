@@ -72,10 +72,7 @@ class HeatMap extends Component {
         // setup x
         //var minYear = temperature[0].year;
 
-        var colors = ["#5300ff","#0033ff","#00ffcc",
-        "#00ff33","#99ff00","#ffff00",
-        "#ffcc00","#ff9900","#ff5400", "#ff0000"]; // alternatively colorbrewer.YlGnBu[9]
-
+        var colors = ["#2824d8","#3ea0fd", "#e0ffff", "#fefebf", "#fee099", "#ffad72", "#f96d5d", "#d82631", "#a50a21", "#870417"];
         var months = [
             "December",
             "November",
@@ -298,7 +295,7 @@ render() {
     );
 }
 }
-/** It is better to set these attribute in the code 
+/** It is better to set these attribute in the code
 width={widthWithMargin}
 height={heightWithMargin}
 viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
