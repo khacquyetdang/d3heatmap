@@ -3,8 +3,10 @@ import { BounceLoader } from 'react-spinners';
 import { connect } from 'react-redux';
 import { scaleLinear, scaleBand, scaleQuantile } from 'd3-scale';
 import { max, min, mean } from 'd3-array';
-import { select } from 'd3-selection';
+import { select, event as currentEvent } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
+import { zoom  } from 'd3-zoom';
+//import { event as currentEvent } from 'd3';
 import d3tip from 'd3-tip';
 import browser from 'detect-browser';
 import moment from 'moment';
@@ -17,7 +19,6 @@ import range  from 'lodash/range';
 class HeatMap extends Component {
     constructor(props) {
         super(props);
-
     }
     componentDidMount()
     {
@@ -128,11 +129,22 @@ class HeatMap extends Component {
             return res;
         });
 
+
+        var azoom = zoom()
+        .scaleExtent([1, 2])
+        .on("zoom", (event) => {
+            console.log("onZoom",event);
+            this.zoomed();
+        });
+
         const node = this.node;
 
         var mainNode = select(node);
 
         mainNode.selectAll("*").remove();
+
+        mainNode.append("g");
+        this.container = mainNode;
 
         var widthLegendBar = 35;
         var heightLegendBar = 10;
@@ -166,7 +178,10 @@ class HeatMap extends Component {
         .attr("viewBox", "0 0 " + svg_dimensions.width + " " + svg_dimensions.height)
         .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
-        .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")");
+        .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")")
+        .call(azoom);
+        //.on("wheel.zoom", null);
+
 
 
         mainNode.append("g")
@@ -235,6 +250,14 @@ class HeatMap extends Component {
         });
     }
 
+    zoomed = () => {
+        console.log("zooomed", currentEvent);
+        if (this.container !== undefined && this.container !== null)
+        {
+            ///this.container.attr("transform", "translate(" + currentEvent.translate + ")scale(" + currentEvent.scale + ")");
+            this.container.attr("transform", currentEvent.transform);
+        }
+    }
     renderTitle = () =>
     {
         const { temperature } = this.props;
@@ -308,6 +331,7 @@ render() {
             {
                 this.renderTitle()
             }
+            <div className="svg_container">
             <svg id="heatmapchart"
                 width={widthWithMargin}
                 height={heightWithMargin}
@@ -316,6 +340,7 @@ render() {
                 xmlns="http://www.w3.org/2000/svg"
                 ref={node => this.node = node}>
             </svg>
+            </div>
         </div>
     );
 }

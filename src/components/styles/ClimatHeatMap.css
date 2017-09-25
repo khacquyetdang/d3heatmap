@@ -10,6 +10,9 @@
   -webkit-box-shadow: 0 0 5px 3px #dcdcdc;
   box-shadow: 0 0 5px 3px #dcdcdc; }
 
+.svg_container {
+  overflow: hidden; }
+
 .labelTitle {
   margin-top: 10px;
   font-size: 25px;
@@ -26,6 +29,9 @@
 
 .DescriptionSVG {
   font-size: 12px; }
+
+svg {
+  overflow: visible; }
 
 @media only screen and (max-width: 1024px) {
   svg {
