@@ -11,7 +11,9 @@
   box-shadow: 0 0 5px 3px #dcdcdc; }
 
 .svg_container {
-  overflow: hidden; }
+  overflow: auto;
+  display: flex;
+  flex-direction: column; }
 
 .labelTitle {
   margin-top: 10px;
