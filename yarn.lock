@@ -1804,7 +1804,7 @@ d3-dispatch@1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.1.tgz#4bd65a43cecff4318deb9df24552aa8bf281a840"
 
-d3-drag@1, d3-drag@1.1.1:
+d3-drag@1, d3-drag@1.1.1, d3-drag@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.1.1.tgz#b5155304433b18ba38726b2184d0098e820dc64b"
   dependencies:
@@ -1960,6 +1960,10 @@ d3-tip@^0.7.1:
   resolved "https://registry.yarnpkg.com/d3-tip/-/d3-tip-0.7.1.tgz#78cbf554f67b720a70e3b0f191e14cffe68cdd79"
   dependencies:
     d3 "^4.2"
+
+d3-transform@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/d3-transform/-/d3-transform-1.0.5.tgz#8e127b0200ca923aa8efd29e0bd5a8ee06e32377"
 
 d3-transition@1, d3-transition@1.1.0, d3-transition@^1.1.0:
   version "1.1.0"

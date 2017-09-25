@@ -6,7 +6,10 @@ import { max, min, mean } from 'd3-array';
 import { select, event as currentEvent } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { zoom  } from 'd3-zoom';
+import { drag, dragEnable } from 'd3-drag';
 //import { event as currentEvent } from 'd3';
+import * as d3  from 'd3';
+import { transform } from 'd3-transform';
 import d3tip from 'd3-tip';
 import browser from 'detect-browser';
 import moment from 'moment';
@@ -118,7 +121,7 @@ class HeatMap extends Component {
             var yAxis = axisLeft(yScale);
             var xAxis = axisBottom(xScale);
 
-
+            dragEnable(window);
             var tip = d3tip()
             .attr('class', 'd3-tip')
             .offset([5, 0])
@@ -147,6 +150,7 @@ class HeatMap extends Component {
 
             var mainNode = select(node);
 
+
             mainNode.selectAll("*").remove();
 
 
@@ -159,16 +163,82 @@ class HeatMap extends Component {
             .attr("max", azoom.scaleExtent()[1])
             .attr("step", (azoom.scaleExtent()[1] - azoom.scaleExtent()[0]) / 100);
             /*.on("change", function(target){
-                console.log(target);
-                //this.slided(target);
+            console.log(target);
+            //this.slided(target);
             });*/
+            /**
+            Obj is translate(0,0) scale(1)
+            **/
+            const my_transform= (Obj) => {
+                var res = { translate : [0,0], scale: 0};
+                try {
+                    var ObjSplitted = Obj.split(" ");
+                    var translatePart = ObjSplitted[0].split('(')[1].split(')')[0].split(',');
+                    var x = parseFloat(translatePart[0]);
+                    var y = parseFloat(translatePart[1]);
+                    var scalePart = parseFloat(ObjSplitted[1].split('(')[1].split(')')[0]);
+                    return { translate: [x, y], scale: scalePart};
+                }
+                catch(e) {
+                    console.log(e);
+                }
+                return res;
+            }
+            var start_x = 0, start_y = 0;
+            var translateX = 0, translateY = 0;
+            const started = (d) => {
+                console.log("dragge started");
+                currentEvent.sourceEvent.stopPropagation();
+                select(this.node).classed("dragging", true);
+                var t =  select(this.node).attr("transform");
+                t = my_transform(t);
+                var scale = t.scale;
+                console.log("transform scale :", scale);
+
+                start_x = currentEvent.x;
+                start_y = currentEvent.y;
+                translateX = t.translate[0],
+                translateY = t.translate[1];
+                console.log("transform x :", translateX, " y : ", translateY);
+            };
+            const dragged = (d) => {
+                console.log("dragged");
+                var current_scale_string, current_scale;
+                /*if (this.getAttribute("transform") === null)
+                {
+                    current_scale = 1;
+                }
+                //case where we have transformed the circle
+                else {
+                    current_scale_string = this.getAttribute("transform").split(' ')[1];
+                    current_scale = +current_scale_string.substring(6,current_scale_string.length-1);
+                }*/
+                current_scale = this.state.zoomValue;
+                var t =  select(this.node).attr("transform");
+                t = my_transform(t);
+                select(this.node)
+                .attr("transform", "translate(" + (translateX + currentEvent.x - start_x) + "," + (translateY + currentEvent.y - start_y) + ") scale("+ t.scale +")");
+                //.attr("x", d.x = start_x + ((currentEvent.x - start_x) / current_scale) )
+                //.attr("y", d.y = start_y + ((currentEvent.y - start_y) / current_scale));
+            };
+
+            var adrag = drag()
+            .subject(function(d) { return d; })
+            .on("start", started)
+            .on("drag", dragged)
+            .on("end", function(d) {
+                console.log("dragged end");
+                select(this.node).classed("dragging", false);
+            });
+
 
             this.container = mainNode;
-
+            this.azoom.scaleTo(this.container, this.state.zoomValue);
             var widthLegendBar = 35;
             var heightLegendBar = 10;
             var dataLegend = [minTemp].concat(zScale.quantiles());
-            var legend = mainNode.selectAll(".legend")
+            var legend = mainNode.selectAll(".legend").append("g")
+            .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")")
             .data(dataLegend, function(d) {
                 console.log("legend", d);
                 return d; }
@@ -243,9 +313,9 @@ class HeatMap extends Component {
             //.attr("width", 10)
             .attr("height",  yScale.bandwidth())
             .style("fill", function(d) { return zScale(d.tas); })
+            .call(adrag)
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide);
-
 
             mainNode.call(tip);
 
@@ -276,108 +346,108 @@ class HeatMap extends Component {
             }
         );
     }
-        zoomed = () => {
-             this.container.attr("transform", currentEvent.transform);
-            /*
-            if (this.container !== undefined && this.container !== null)
-            {
-                ///this.container.attr("transform", "translate(" + currentEvent.translate + ")scale(" + currentEvent.scale + ")");
-                this.container.attr("transform", currentEvent.transform);
-            }*/
-        }
-        renderTitle = () =>
+    zoomed = () => {
+        this.container.attr("transform", currentEvent.transform);
+        /*
+        if (this.container !== undefined && this.container !== null)
         {
-            const { temperature } = this.props;
-
-            if (this.props.countryName !== ""
-            && temperature !== undefined
-            && temperature.length !== 0)
-            {
-                return (
-                    <div className="TitleContainer">
-                        <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
-                        <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
-                        <div className='DescriptionSVG'>Temperatures are in Celsius. The mean temperature over these years is { this.props.meanTemp }.<br/>
-                        The data source is from
-                        <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
-                            The World Bank Climate Change Knowledge Portal
-                        </a>
-                    </div>
-                    <input type="range"
-                        value={this.state.zoomValue}
-                        ref={slider => this.slider = slider}
-                        onChange={this.slided}/>
-
-                </div>
-            );
-        }
+        ///this.container.attr("transform", "translate(" + currentEvent.translate + ")scale(" + currentEvent.scale + ")");
+        this.container.attr("transform", currentEvent.transform);
+        }*/
     }
-    renderLoading = () =>
+    renderTitle = () =>
     {
-        if (this.props.isTemperatureFetching === true
-        ) {
+        const { temperature } = this.props;
 
+        if (this.props.countryName !== ""
+        && temperature !== undefined
+        && temperature.length !== 0)
+        {
             return (
-                <BounceLoader
-                    color={'#123abc'}
-                    loading={true}
-                    />
-            );
-        }
-    }
-
-
-    createBarChartEmptyData = () => {
-
-        const node = this.node;
-
-        var mainNode = select(node);
-
-        mainNode.selectAll("*").remove();
-
-        mainNode.attr("width", svg_dimensions.width)
-        .attr("height", svg_dimensions.height)
-        .attr("viewBox", "0 0 " + svg_dimensions.width + " " + svg_dimensions.height)
-        .attr("preserveAspectRatio", "xMidYMid meet")
-
-        mainNode.append("text")
-        .attr("y", svg_dimensions.height / 2)
-        .attr("x", svg_dimensions.width / 3)
-        .attr("class", "labelTitle")
-        .attr("font-size", 30)
-        .attr("fill", "red")
-        .text("Data is not availaible for this country.");
-    }
-
-    render() {
-
-        var margin = svg_dimensions.margin;
-        var width= svg_dimensions.width;
-        var height = svg_dimensions.height;
-        var widthWithMargin = width + margin.left + margin.right;
-        var heightWithMargin = height + margin.top + margin.bottom;
-
-        return (
-            <div className="HeatMapContainer">
-                {
-                    this.renderLoading()
-                }
-                {
-                    this.renderTitle()
-                }
-                <div className="svg_container">
-                    <svg id="heatmapchart"
-                        width={widthWithMargin}
-                        height={heightWithMargin}
-                        viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
-                        preserveAspectRatio="xMidYMid meet"
-                        xmlns="http://www.w3.org/2000/svg"
-                        ref={node => this.node = node}>
-                    </svg>
+                <div className="TitleContainer">
+                    <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
+                    <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
+                    <div className='DescriptionSVG'>Temperatures are in Celsius. The mean temperature over these years is { this.props.meanTemp }.<br/>
+                    The data source is from
+                    <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
+                        The World Bank Climate Change Knowledge Portal
+                    </a>
                 </div>
+                <input type="range"
+                    value={this.state.zoomValue}
+                    ref={slider => this.slider = slider}
+                    onChange={this.slided}/>
+
             </div>
         );
     }
+}
+renderLoading = () =>
+{
+    if (this.props.isTemperatureFetching === true
+    ) {
+
+        return (
+            <BounceLoader
+                color={'#123abc'}
+                loading={true}
+                />
+        );
+    }
+}
+
+
+createBarChartEmptyData = () => {
+
+    const node = this.node;
+
+    var mainNode = select(node);
+
+    mainNode.selectAll("*").remove();
+
+    mainNode.attr("width", svg_dimensions.width)
+    .attr("height", svg_dimensions.height)
+    .attr("viewBox", "0 0 " + svg_dimensions.width + " " + svg_dimensions.height)
+    .attr("preserveAspectRatio", "xMidYMid meet")
+
+    mainNode.append("text")
+    .attr("y", svg_dimensions.height / 2)
+    .attr("x", svg_dimensions.width / 3)
+    .attr("class", "labelTitle")
+    .attr("font-size", 30)
+    .attr("fill", "red")
+    .text("Data is not availaible for this country.");
+}
+
+render() {
+
+    var margin = svg_dimensions.margin;
+    var width= svg_dimensions.width;
+    var height = svg_dimensions.height;
+    var widthWithMargin = width + margin.left + margin.right;
+    var heightWithMargin = height + margin.top + margin.bottom;
+
+    return (
+        <div className="HeatMapContainer">
+            {
+                this.renderLoading()
+            }
+            {
+                this.renderTitle()
+            }
+            <div className="svg_container">
+                <svg id="heatmapchart"
+                    width={widthWithMargin}
+                    height={heightWithMargin}
+                    viewBox={"0 0 " + widthWithMargin + " " + heightWithMargin}
+                    preserveAspectRatio="xMidYMid meet"
+                    xmlns="http://www.w3.org/2000/svg"
+                    ref={node => this.node = node}>
+                </svg>
+            </div>
+        </div>
+    );
+}
 }
 /** It is better to set these attribute in the code
 */
