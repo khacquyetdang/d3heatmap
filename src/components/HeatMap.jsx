@@ -273,8 +273,7 @@ class HeatMap extends Component {
             .append("g")
             .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")")
             .call(azoom).on("wheel.zoom", null)
-            .on('dblclick.zoom', null);
-
+    
 
             mainNode.append("g")
             .attr("class", "axis axis--x")
@@ -372,7 +371,7 @@ class HeatMap extends Component {
                     <div className='TitleSVG'>Monthly Temperature for {  this.props.countryName }</div>
                     <div className='DateTitleSVG'> { this.props.minYear } -  { this.props.maxYear } </div>
                     <div className='DescriptionSVG'>Temperatures are in Celsius. The mean temperature over these years is { this.props.meanTemp }.<br/>
-                    The data source is from
+                    The data source is from  {" "}
                     <a target="_blank" href="http://sdwebx.worldbank.org/climateportal/index.cfm?page=downscaled_data_download&menu=historical">World Bank Climate Data
                         The World Bank Climate Change Knowledge Portal
                     </a>

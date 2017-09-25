@@ -127,5 +127,19 @@ export function fetchTemperatureDataFromWorldBank(ISO3Country, startYear, endYea
         })
         .catch((error) => {
             console.error(error);
-        });
-    }
+        }
+    );
+}
+
+export function fetchCountriesShareBorder() {
+    var url = 'https://raw.githubusercontent.com/DealPete/forceDirected/master/countries.json';
+    return fetch(url, myInit)
+    .then((response) => response.json()).then((responseJson) => {
+        console.log("result fetch fetchCountriesShareBorder");
+        console.log(responseJson);
+        return responseJson;
+    })
+    .catch((error) => {
+        console.error("fetchCountriesShareBorder error: ", error);
+    });
+}
