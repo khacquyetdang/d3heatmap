@@ -216,6 +216,10 @@ class HeatMap extends Component {
                 current_scale = this.state.zoomValue;
                 var t =  select(this.node).attr("transform");
                 t = my_transform(t);
+                if (t.scale === 1)
+                {
+                    return;
+                }
                 select(this.node)
                 .attr("transform", "translate(" + (translateX + currentEvent.x - start_x) + "," + (translateY + currentEvent.y - start_y) + ") scale("+ t.scale +")");
                 //.attr("x", d.x = start_x + ((currentEvent.x - start_x) / current_scale) )
