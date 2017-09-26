@@ -90,14 +90,14 @@ class App extends Component {
     render() {
         return (
             <Router>
-                <div id="outer-container">
+                <div id="outer-container" className="App">
                     <Menu right noOverlay pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles } >
                         <Link  className="menu-item" to='/'>Temperature</Link>
                         <Link  className="menu-item" to='/gdp'>Gdp</Link>
                         <Link  className="menu-item" to='/cyclist'>Cyclist</Link>
                         <Link  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
                     </Menu>
-                    <div id="page-wrap" className="App">
+                    <div id="page-wrap">
                         {
                             /*
                             <Menu pageWrapId={"page-wrap"} className="menu" >
