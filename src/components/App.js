@@ -12,6 +12,44 @@ import 'react-tabs/style/react-tabs.css';
 import { fetchCountries, fetchCountryGdp } from '../actions'
 import Sidebar from 'react-sidebar';
 import { intervalDateGdp } from '../constants';
+import { slide as Menu } from 'react-burger-menu';
+
+var styles = {
+    bmBurgerButton: {
+        position: 'fixed',
+        width: '36px',
+        height: '30px',
+        left: '36px',
+        top: '36px',
+    },
+    bmBurgerBars: {
+        background: '#373a47'
+        //background: '#e6e8f3'
+    },
+    bmCrossButton: {
+        height: '24px',
+        width: '24px'
+    },
+    bmCross: {
+        background: '#bdc3c7'
+    },
+    bmMenu: {
+        background: '#373a47',
+        padding: '2.5em 1.5em 0',
+        fontSize: '1.15em'
+    },
+    bmMorphShape: {
+        fill: '#373a47'
+    },
+    bmItemList: {
+        color: '#b8b7ad',
+        padding: '0.1em',
+        height: '80%',
+    },
+    bmOverlay: {
+        background: 'rgba(0, 0, 0, 0.3)'
+    }
+}
 
 class App extends Component {
 
@@ -52,19 +90,30 @@ class App extends Component {
     render() {
         return (
             <Router>
-                <div className="App">
-                    <div className="menu" >
-                        <Link to='/'>Temperature</Link> {" | "}
-                        <Link  to='/gdp'>Gdp</Link> {" | "}
-                        <Link  to='/cyclist'>Cyclist</Link> {" | "}
-                        <Link  to='/countriesshareborders'>Graphe Directed Force</Link>
-                    </div>
-                    <div>
-                        <Route exact path='/' component={ClimatHeatMap} />
-                        <Route path='/cyclist' component={CyclistScatterplot}/>
-                        <Route path='/gdp' component={GdpBarChart}/>
-                        <Route path='/countriesshareborders' component={CountryShareBorder}/>
-
+                <div id="outer-container">
+                    <Menu noOverlay pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles }>
+                        <Link  className="menu-item" to='/'>Temperature</Link>
+                        <Link  className="menu-item" to='/gdp'>Gdp</Link>
+                        <Link  className="menu-item" to='/cyclist'>Cyclist</Link>
+                        <Link  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
+                    </Menu>
+                    <div id="page-wrap" className="App">
+                        {
+                            /*
+                            <Menu pageWrapId={"page-wrap"} className="menu" >
+                            <Link  className="menu" to='/'>Temperature</Link> {" | "}
+                            <Link  className="menu" to='/gdp'>Gdp</Link> {" | "}
+                            <Link  className="menu" to='/cyclist'>Cyclist</Link> {" | "}
+                            <Link  className="menu" to='/countriesshareborders'>Graphe Directed Force</Link>
+                            </Menu>
+                            */
+                        }
+                        <div>
+                            <Route exact path='/' component={ClimatHeatMap} />
+                            <Route path='/cyclist' component={CyclistScatterplot}/>
+                            <Route path='/gdp' component={GdpBarChart}/>
+                            <Route path='/countriesshareborders' component={CountryShareBorder}/>
+                        </div>
                     </div>
                     <Footer />
                 </div>
