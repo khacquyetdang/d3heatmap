@@ -4,7 +4,7 @@ import { fetchCountries, fetchCountryGdp, setCountryGdp } from './worldbank.jsx'
 
 import { setCountryTemperature, fetchTemperature } from './climate.jsx';
 
-import { fetchCountriesShareBorder } from './fetchCountriesShareBorder';
+import { fetchCountriesShareBorder } from './countriesshareborders';
 export {
     setCountryTemperature,
     fetchTemperature,

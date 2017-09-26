@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import ClimatHeatMap from './ClimatHeatMap'
+import ClimatHeatMap from './ClimatHeatMap';
 import GdpBarChart from './GdpBarChart';
+import CountryShareBorder from './CountryShareBorder';
 import Controls from './Controls';
 import Footer from './Footer';
 import CyclistScatterplot from './CyclistScatterplot';
@@ -55,12 +56,15 @@ class App extends Component {
                     <div className="menu" >
                         <Link to='/'>Temperature</Link> {" | "}
                         <Link  to='/gdp'>Gdp</Link> {" | "}
-                        <Link  to='/cyclist'>Cyclist</Link>
+                        <Link  to='/cyclist'>Cyclist</Link> {" | "}
+                        <Link  to='/countriesshareborders'>Graphe Directed Force</Link>
                     </div>
                     <div>
                         <Route exact path='/' component={ClimatHeatMap} />
                         <Route path='/cyclist' component={CyclistScatterplot}/>
                         <Route path='/gdp' component={GdpBarChart}/>
+                        <Route path='/countriesshareborders' component={CountryShareBorder}/>
+
                     </div>
                     <Footer />
                 </div>

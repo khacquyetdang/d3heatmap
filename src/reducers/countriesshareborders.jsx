@@ -1,3 +1,5 @@
+import { combineReducers } from 'redux';
+
 import {
     FETCH_COUNTRIES_SHARE_BORDER_SUCCESS,
     FETCH_COUNTRIES_SHARE_BORDER_REQUEST,
