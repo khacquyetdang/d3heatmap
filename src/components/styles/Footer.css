@@ -2,8 +2,13 @@
   width: 100%;
   flex-direction: row;
   background-color: #CCD1D1;
-  padding: 10px 20px 10px 20px;
-  height: 30px;
+  min-height: 50px;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
   justify-content: center; }
 
 .copyright {
