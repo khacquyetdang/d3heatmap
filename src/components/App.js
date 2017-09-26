@@ -19,8 +19,8 @@ var styles = {
         position: 'fixed',
         width: '36px',
         height: '30px',
-        left: '36px',
-        top: '36px',
+        right: '18px',
+        top: '18px',
     },
     bmBurgerBars: {
         background: '#373a47'
@@ -91,7 +91,7 @@ class App extends Component {
         return (
             <Router>
                 <div id="outer-container">
-                    <Menu noOverlay pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles }>
+                    <Menu right noOverlay pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles } >
                         <Link  className="menu-item" to='/'>Temperature</Link>
                         <Link  className="menu-item" to='/gdp'>Gdp</Link>
                         <Link  className="menu-item" to='/cyclist'>Cyclist</Link>
