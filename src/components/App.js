@@ -97,7 +97,7 @@ class App extends Component {
                         <Link  className="menu-item" to='/cyclist'>Cyclist</Link>
                         <Link  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
                     </Menu>
-                    <div id="page-wrap">
+                    <div id="page-wrap" className="AppContent">
                         {
                             /*
                             <Menu pageWrapId={"page-wrap"} className="menu" >

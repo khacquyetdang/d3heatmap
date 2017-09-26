@@ -34,6 +34,11 @@ body {
 .bm-menu-wrap {
   z-index: 1000 !important; }
 
+@media only screen and (min-width: 1024px) {
+  .AppContent {
+    min-height: 93%;
+    min-height: 93vh; } }
+
 .menu-item {
   color: #b3b3a9 !important;
   font-size: 24px;
