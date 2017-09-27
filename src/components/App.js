@@ -59,12 +59,11 @@ class App extends Component {
         this.state = {
             sidebarOpen: true
         }
-
-        this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
     }
 
-    onSetSidebarOpen = (open) => {
+    setSideBarOpen = (open) => {
         this.setState({sidebarOpen: open});
+        this.forceUpdate();
     }
 
     componentDidMount()
@@ -87,15 +86,22 @@ class App extends Component {
 
     }
 
+    onMenuStateChange = (state) => {
+        this.setSideBarOpen(state.isOpen);
+        return state.isOpen;
+    };
     render() {
         return (
             <Router>
                 <div id="outer-container" className="App">
-                    <Menu right noOverlay pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles } >
-                        <Link  className="menu-item" to='/'>Temperature</Link>
-                        <Link  className="menu-item" to='/gdp'>Gdp</Link>
-                        <Link  className="menu-item" to='/cyclist'>Cyclist</Link>
-                        <Link  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
+                    <Menu
+                        onStateChange={ this.onMenuStateChange }
+                        isOpen={this.state.sidebarOpen}
+                        right noOverlay disableOverlayClick pageWrapId={"page-wrap"} outerContainerId={ "outer-container" } styles={ styles } >
+                        <Link  onClick={() => this.setSideBarOpen(false)} className="menu-item" to='/'>Temperature</Link>
+                        <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/gdp'>Gdp</Link>
+                        <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/cyclist'>Cyclist</Link>
+                        <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
                     </Menu>
                     <div id="page-wrap" className="AppContent">
                         {

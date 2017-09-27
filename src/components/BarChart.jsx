@@ -9,6 +9,7 @@ import d3tip from 'd3-tip';
 import browser from 'detect-browser';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/BarChart.css';
+import { svg_dimensions as svg_dimensions } from '../constants';
 
 import { fetchCountryGdp } from '../actions'
 
@@ -62,8 +63,8 @@ class BarChart extends Component {
 
         const node = this.node;
 
-        var width = 960;
-        var height = 500;
+        var width = svg_dimensions.width;
+        var height = svg_dimensions.height;
 
         var margin = this.createMargin();
         var widthWithMargin = width + margin.left + margin.right;
@@ -137,14 +138,18 @@ class BarChart extends Component {
         const node = this.node;
 
         const dataMax = maxGDPOverYear;
-        var width = 960;
-        var height = 500;
 
 
-        var margin = this.createMargin();
 
-        var widthWithMargin = width + margin.left + margin.right;
-        var heightWithMargin = height + margin.top + margin.bottom;
+        var margin = svg_dimensions.margin;//this.createMargin();
+
+        var width =  svg_dimensions.width - margin.left - margin.right;
+        var height = svg_dimensions.height- margin.top - margin.bottom;
+
+        var widthWithMargin = svg_dimensions.width;
+        var heightWithMargin = svg_dimensions.height;
+
+
 
 
         var yScale = scaleLinear().rangeRound([height, 0]);
