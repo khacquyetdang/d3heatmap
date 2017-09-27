@@ -93,7 +93,8 @@ class App extends Component {
     render() {
         return (
             <Router>
-                <div id="outer-container" className="App">
+                <div id="outer-container" className="App"
+                    onClick={() => this.setSideBarOpen(false)}>
                     <Menu
                         onStateChange={ this.onMenuStateChange }
                         isOpen={this.state.sidebarOpen}

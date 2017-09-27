@@ -27,9 +27,14 @@ export const svg_dimensions_gdp = {
     height : 500,
 }
 
+export const svg_dimensions_cyclist = {
+    margin : {top: 20, right: 30, bottom: 70, left: 70},
+    width :960,
+    height : 500,
+}
 
 export const svg_dimensions = {
-    margin : {top: 50, right: 80, bottom: 70, left: 80},
+    margin : {top: 20, right: 30, bottom: 40, left: 80},
     width :960,
     height : 500,
 }

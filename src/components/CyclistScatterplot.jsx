@@ -11,7 +11,7 @@ import moment from 'moment';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/BarChart.css';
 import { fetchCyclist } from '../actions';
-import { svg_dimensions } from '../constants';
+import { svg_dimensions_cyclist as svg_dimensions } from '../constants';
 
 class CyclistScatterplot extends Component {
     constructor(props) {
@@ -244,6 +244,19 @@ class CyclistScatterplot extends Component {
         }
     }
 
+    renderTitle = () =>
+    {
+
+        if (this.props.isCyclistFetching === false)
+        {
+            return (
+                <div className="TitleContainer">
+                    <div className='TitleSVG'>Doping in Professional Bicycle Racing</div>
+                </div>
+            );
+        }
+    }
+
     render() {
 
         var margin = svg_dimensions.margin;
@@ -256,6 +269,9 @@ class CyclistScatterplot extends Component {
             <div className="BarChart">
                 {
                     this.renderLoading()
+                }
+                {
+                    this.renderTitle()
                 }
                 <svg id="chart"
                     width={widthWithMargin}
