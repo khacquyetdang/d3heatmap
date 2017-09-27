@@ -7,6 +7,7 @@ import { select } from 'd3-selection';
 import { axisBottom, axisLeft } from 'd3-axis';
 import d3tip from 'd3-tip';
 import browser from 'detect-browser';
+import _ from 'lodash';
 import moment from 'moment';
 import { timeDay, timeYear, timeMonth } from 'd3-time';
 import './styles/ClimatHeatMap.css';
@@ -22,7 +23,10 @@ class ClimatHeatMap extends Component {
     }
     componentDidMount()
     {
-        this.props.fetchTemperature("FRA", 1980, 1999);
+        if (_.isEmpty(this.props.temperature))
+        {
+            this.props.fetchTemperature();
+        }
     }
 
     componentWillReceiveProps(nextProps)
@@ -59,10 +63,12 @@ function mapStateToProps(state)
 {
     console.log("Scatterplot mapStateToProps: ");
     const {
-        countryTemperatureSelect
+        countryTemperatureSelect,
+        temperature
     } = state;
 
     return {
+        temperature,
         countryTemperatureSelect,
     }
 }
