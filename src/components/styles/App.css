@@ -31,6 +31,9 @@ body {
   .menu a {
     color: #186A3B !important; }
 
+svg {
+  border: solid 1px #85929E; }
+
 .bm-menu-wrap {
   z-index: 1000 !important; }
 

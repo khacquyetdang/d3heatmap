@@ -185,14 +185,6 @@ class BarChart extends Component {
 
         mainNode.selectAll("*").remove();
 
-
-
-        mainNode.append("text")
-        .attr("y", 30)
-        .attr("x", widthWithMargin / 3)
-        .attr("class", "labelTitle")
-        .text("Gross Domestic Product");
-
         var enterNode = mainNode.attr("width", widthWithMargin)
         .attr("height", heightWithMargin)
         .attr("viewBox", "0 0 " + widthWithMargin + " " + heightWithMargin)
@@ -261,6 +253,20 @@ class BarChart extends Component {
             }
         });
     }
+
+    renderTitle = () =>
+    {
+        var dataSource = this.props.countryGdp;
+
+        if (!(dataSource === undefined || dataSource === null || dataSource.length === 0))
+        {
+            return (
+                <div className="TitleContainer">
+                    <div className='TitleSVG'>Gross Domestic Product of { dataSource[0].country.value }</div>
+                </div>
+            );
+        }
+    }
     renderLoading = () =>
     {
         if (this.props.isCountryGDPFetching === true
@@ -282,6 +288,9 @@ class BarChart extends Component {
             <div className="BarChart">
                 {
                     this.renderLoading()
+                }
+                {
+                    this.renderTitle()
                 }
                 <svg id="chart"
                     xmlns="http://www.w3.org/2000/svg"
