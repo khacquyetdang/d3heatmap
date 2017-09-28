@@ -143,3 +143,15 @@ export function fetchCountriesShareBorder() {
         console.error("fetchCountriesShareBorder error: ", error);
     });
 }
+
+export function fetchWorldMapJsonPath() {
+    var url = process.env.PUBLIC_URL + "/data/world_countries_map.json";
+    return fetch(url, myInit)
+    .then((response) => response.json()).then((responseJson) => {
+        console.log("result fetch fetchWolrdMapJsonPath", responseJson);
+        return responseJson;
+    })
+    .catch((error) => {
+        console.error("fetchWolrdMapJsonPath error: ", error);
+    });
+}

@@ -206,12 +206,12 @@ class HeatMap extends Component {
                 var current_scale_string, current_scale;
                 /*if (this.getAttribute("transform") === null)
                 {
-                    current_scale = 1;
+                current_scale = 1;
                 }
                 //case where we have transformed the circle
                 else {
-                    current_scale_string = this.getAttribute("transform").split(' ')[1];
-                    current_scale = +current_scale_string.substring(6,current_scale_string.length-1);
+                current_scale_string = this.getAttribute("transform").split(' ')[1];
+                current_scale = +current_scale_string.substring(6,current_scale_string.length-1);
                 }*/
                 current_scale = this.state.zoomValue;
                 var t =  select(this.node).attr("transform");
@@ -273,7 +273,7 @@ class HeatMap extends Component {
             .append("g")
             .attr("transform", "translate(" + svg_dimensions.margin.left + "," + (svg_dimensions.margin.top) + ")")
             .call(azoom).on("wheel.zoom", null)
-    
+
 
             mainNode.append("g")
             .attr("class", "axis axis--x")
@@ -484,4 +484,5 @@ function mapStateToProps(state)
         temperature : temperatureForCountry
     }
 }
+
 export default connect(mapStateToProps, {fetchTemperature}) (HeatMap);

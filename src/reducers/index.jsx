@@ -6,6 +6,7 @@ import { isTemperatureFetching, temperature,
     countryTemperatureSelect
 } from './climate';
 
+
 import {countriesshareborders, isCountriessharebordersFetching} from './countriesshareborders';
 
 
@@ -18,9 +19,11 @@ import { countries,
     countryGdpSelect
 } from './gdp';
 
+import worldmap from './worldmap';
 
 const countriessharebordersReducer = combineReducers({countriesshareborders, isCountriessharebordersFetching});
 const appReducer = combineReducers({
+    worldmap,
     countriessharebordersRoot : countriessharebordersReducer,
     countries,
     countriesOptions,

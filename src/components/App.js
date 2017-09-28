@@ -13,43 +13,8 @@ import { fetchCountries, fetchCountryGdp } from '../actions'
 import Sidebar from 'react-sidebar';
 import { intervalDateGdp } from '../constants';
 import { slide as Menu } from 'react-burger-menu';
-
-var styles = {
-    bmBurgerButton: {
-        position: 'fixed',
-        width: '36px',
-        height: '30px',
-        right: '18px',
-        top: '18px',
-    },
-    bmBurgerBars: {
-        background: '#373a47'
-        //background: '#e6e8f3'
-    },
-    bmCrossButton: {
-        height: '24px',
-        width: '24px'
-    },
-    bmCross: {
-        background: '#bdc3c7'
-    },
-    bmMenu: {
-        background: '#373a47',
-        padding: '2.5em 1.5em 0',
-        fontSize: '1.15em'
-    },
-    bmMorphShape: {
-        fill: '#373a47'
-    },
-    bmItemList: {
-        color: '#b8b7ad',
-        padding: '0.1em',
-        height: '80%',
-    },
-    bmOverlay: {
-        background: 'rgba(0, 0, 0, 0.3)'
-    }
-}
+import styles from './styles/BurgerMenu';
+import MeteoritesWorldMap from './MeteoritesWorldMap';
 
 class App extends Component {
 
@@ -103,6 +68,8 @@ class App extends Component {
                         <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/gdp'>Gdp</Link>
                         <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/cyclist'>Cyclist</Link>
                         <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/countriesshareborders'>Graphe Directed Force</Link>
+                        <Link  onClick={() => this.setSideBarOpen(false)}  className="menu-item" to='/meteoritesworldmap'>Meteorites Worldmap</Link>
+
                     </Menu>
                     <div id="page-wrap" className="AppContent">
                         {
@@ -120,6 +87,8 @@ class App extends Component {
                             <Route path='/cyclist' component={CyclistScatterplot}/>
                             <Route path='/gdp' component={GdpBarChart}/>
                             <Route path='/countriesshareborders' component={CountryShareBorder}/>
+                            <Route path='/meteoritesworldmap' component={MeteoritesWorldMap}/>
+
                         </div>
                     </div>
                     <Footer />

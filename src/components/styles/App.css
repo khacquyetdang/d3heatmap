@@ -40,7 +40,9 @@ svg {
 @media only screen and (min-width: 1024px) {
   .AppContent {
     min-height: 93%;
-    min-height: 93vh; } }
+    min-height: 93vh;
+    display: flex;
+    align-items: center; } }
 
 @media only screen and (max-width: 414px) {
   .AppContent {
@@ -56,3 +58,18 @@ svg {
 .description {
   font-size: 12px;
   margin: 10px 100px 20px 100px; }
+
+.Container {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #f5f5f5;
+  -moz-box-shadow: 0 0 5px 3px #dcdcdc;
+  -webkit-box-shadow: 0 0 5px 3px #dcdcdc;
+  box-shadow: 0 0 5px 3px #dcdcdc; }
+
+.TitleContainer {
+  margin: 10px; }
