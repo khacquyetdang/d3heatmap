@@ -155,3 +155,16 @@ export function fetchWorldMapJsonPath() {
         console.error("fetchWolrdMapJsonPath error: ", error);
     });
 }
+
+
+export function fetchMeteoritePathData() {
+    var url = process.env.PUBLIC_URL + "/data/meteorite-strike-data.json";
+    return fetch(url, myInit)
+    .then((response) => response.json()).then((responseJson) => {
+        console.log("result fetch fetchMeteoritePathData", responseJson);
+        return responseJson;
+    })
+    .catch((error) => {
+        console.error("fetchMeteoritePathData error: ", error);
+    });
+}

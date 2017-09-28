@@ -1,9 +1,12 @@
+
 import React, { Component } from 'react';
 import * as d3  from 'd3';
+import d3tip from 'd3-tip';
 import { svg_dimensions as svg_dimensions } from '../constants';
 import { connect } from 'react-redux';
-import { fetchWorldMapJsonPath } from '../actions';
+import { fetchWorldMapJsonPath, fetchMeteoriteJsonPath } from '../actions';
 import _ from 'lodash';
+import './styles/MeteoritesWorldMap.css';
 
 class MeteoritesWorldMap extends Component {
 
@@ -13,7 +16,13 @@ class MeteoritesWorldMap extends Component {
         {
             this.props.fetchWorldMapJsonPath();
         }
-        else {
+        if (_.isEmpty(this.props.worldmap.meteoritepath))
+        {
+            this.props.fetchMeteoriteJsonPath();
+        }
+
+        if (_.isEmpty(this.props.worldmap.wolrdmappath) === false
+        && _.isEmpty(this.props.worldmap.meteoritepath) === false) {
             this.createMeteoritesWorldMap();
         }
     }
@@ -21,8 +30,8 @@ class MeteoritesWorldMap extends Component {
     componentWillReceiveProps(nextProps)
     {
         this.props = nextProps;
-        if (_.isEmpty(this.props.worldmap.wolrdmappath) === false)
-        {
+        if (_.isEmpty(this.props.worldmap.wolrdmappath) === false
+        && _.isEmpty(this.props.worldmap.meteoritepath) === false) {
             this.createMeteoritesWorldMap();
         }
         //this.props.fetchCountryGdp(this.state.selectValue, this.state.intervalDate);
@@ -38,6 +47,8 @@ class MeteoritesWorldMap extends Component {
         .range(["rgb(247,251,255)", "rgb(222,235,247)", "rgb(198,219,239)", "rgb(158,202,225)", "rgb(107,174,214)", "rgb(66,146,198)","rgb(33,113,181)","rgb(8,81,156)","rgb(8,48,107)","rgb(3,19,43)"]);
         var path = d3.geoPath();
 
+        d3.select(this.node).selectAll("*").remove();
+
         var svg = d3.select(this.node)
         .attr("width", "100%")
         .attr("height", "100%")
@@ -47,10 +58,62 @@ class MeteoritesWorldMap extends Component {
         .attr('class', 'map');
 
 
+        this.props.worldmap.meteoritepath.features = this.props.worldmap.meteoritepath.features.map(function(d)
+        {
+            if (d.properties.mass === undefined || d.properties.mass === null)
+            {
+                d.properties.mass = 1.;
+            } else {
+                d.properties.mass = parseFloat(d.properties.mass)
+            }
+            return d;
+        });
+        var minMass = d3.min(this.props.worldmap.meteoritepath.features, function(d) { return (d.properties.mass); });
+        var maxMass = d3.max(this.props.worldmap.meteoritepath.features, function(d) { return (d.properties.mass); });
+
+/*
+        var distanceMinMax = maxMass - minMass;
+        var rangeArr = [minMass];
+        var step = distanceMinMax / 20;
+        var index = minMass + step;
+        while (index < maxMass)
+        {
+            rangeArr.push(index);
+            index = index + step;
+        }
+        rangeArr.push(maxMass);*/
+
+        var rangeArr = _.range(0.1, 5, 0.2);//[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0, 1.1, 1.2, 1.3 ];
+        //rangeArr = rangeArr.map((d) =>  d * 3);
+        var xScale = d3.scaleOrdinal().range(rangeArr);
+        xScale.domain(this.props.worldmap.meteoritepath.features.map(function(d) { return (d.properties.mass); }));
+
+        //var colorRange = d3.schemeCategory10;
+        var colorRange = [d3.rgb("#007AFF"), d3.rgb('#FFF500')];
+        var colorScale = d3.scaleLinear().range(colorRange).interpolate(d3.interpolateHcl);
+        colorScale.domain(this.props.worldmap.meteoritepath.features.map(function(d) { return (d.properties.mass); }));
+
+        console.log("domain : ", this.props.worldmap.meteoritepath.features.map(function(d) { return (d.properties.mass); }));
         var projection = d3.geoMercator()
         .scale(125);
         //.translate( [width / 2, height / 1.45]);*/
         //var projection = d3.geoNaturalEarth1();
+
+        var tip = d3tip()
+        .attr('class', 'd3-tip')
+        .offset([5, 0])
+        .html(function(d) {
+            var properties = d.properties;
+
+            var res =   "<div class=\"tooltipDot\">"+ " Name: " + properties.name + "<br/>"
+            + " Mass: " + properties.mass + "<br/>"
+            + " fall: " + properties.fall + "<br/>"
+            + " Year: " + properties.year + "<br/>"
+            + "</div>";
+
+            res = res + "</div>";
+            return res;
+        });
 
         path.projection(projection);
 
@@ -60,28 +123,44 @@ class MeteoritesWorldMap extends Component {
         .data(this.props.worldmap.wolrdmappath.features)
         .enter().append("path")
         .attr("d", path)
-        .style("fill", function(d) { return "green"; })
-        .style('stroke', 'white')
-        .style('stroke-width', 1.5)
-        .style("opacity",0.8)
-        // tooltips
-        .style("stroke","white")
-        .style('stroke-width', 0.3)
-        .on('mouseover',function(d) {
+        .style("fill", function(d) { return '#238B27'; })//"#246024"; })
+        .style('stroke', 'rgba(0,0,0,0.5)')
+        .style('stroke-width', 1.00)
+        .style("opacity",0.5);
 
-            d3.select(this)
-            .style("opacity", 1)
-            .style("stroke","white")
-            .style("stroke-width",3);
+        var meteorite = svg.append("g")
+        .attr("class", "meteorite")
+        .selectAll("circle")
+        .data(this.props.worldmap.meteoritepath.features)
+        .enter().append("circle")
+        .attr("cx", function(d) {
+            if (d.geometry !== null)
+            {
+                //console.log("projection", projection(d.geometry.coordinates));
+                return projection(d.geometry.coordinates)[0];
+            }
+            return 20;
         })
-        .on('mouseout', function(d){
+        .attr("cy", function(d) {
+            if (d.geometry !== null)
+            {
+                return projection(d.geometry.coordinates)[1];
+            }
+            return 10;
 
-            d3.select(this)
-            .style("opacity", 0.8)
-            .style("stroke","white")
-            .style("stroke-width",0.3);
-        });
+        })
+        .attr("r", function(d){
+            //console.log("size radius", "" + xScale(d.properties.mass) + "px");
+            return "" + xScale(d.properties.mass) + "";
+            //return d.properties.mass / maxMass * 10;
+        })
+        .style("fill", function(d) { return colorScale(d.properties.mass); })//"#246024"; })
+        .style("opacity",0.5)
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);;
 
+        meteorite.call(tip);
+        // tooltips
     }
     render()
     {
@@ -98,6 +177,7 @@ class MeteoritesWorldMap extends Component {
         };
         const svgStyle = {
           overflow: 'hidden',
+          border: 'none'
         };
 
         return (
@@ -105,7 +185,7 @@ class MeteoritesWorldMap extends Component {
                 <div className="TitleContainer">
                     <div className='TitleSVG'>Meteorites WorldMap</div>
                 </div>
-                <div className="svg_container" style={svgContainerStyle}>
+                <div className="svg_container_worldmap" style={svgContainerStyle}>
                     <svg id="heatmapchart"
                         width={width}
                         height={height}
@@ -145,4 +225,4 @@ function mapStateToProps(state)
         worldmap
     }
 }
-export  default connect(mapStateToProps, {fetchWorldMapJsonPath}) (MeteoritesWorldMap);
+export  default connect(mapStateToProps, {fetchWorldMapJsonPath, fetchMeteoriteJsonPath}) (MeteoritesWorldMap);
