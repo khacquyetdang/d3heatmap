@@ -62,7 +62,7 @@ class MeteoritesWorldMap extends Component {
         {
             if (d.properties.mass === undefined || d.properties.mass === null)
             {
-                d.properties.mass = 1.;
+                d.properties.mass = 0.01;
             } else {
                 d.properties.mass = parseFloat(d.properties.mass)
             }
@@ -71,22 +71,37 @@ class MeteoritesWorldMap extends Component {
         var minMass = d3.min(this.props.worldmap.meteoritepath.features, function(d) { return (d.properties.mass); });
         var maxMass = d3.max(this.props.worldmap.meteoritepath.features, function(d) { return (d.properties.mass); });
 
-/*
+
         var distanceMinMax = maxMass - minMass;
-        var rangeArr = [minMass];
-        var step = distanceMinMax / 20;
-        var index = minMass + step;
+        //var rangeArr = [minMass];
+        var step = distanceMinMax / 100.;
+        /*var index = minMass + step;
         while (index < maxMass)
         {
             rangeArr.push(index);
             index = index + step;
         }
         rangeArr.push(maxMass);*/
-
-        var rangeArr = _.range(0.1, 5, 0.2);//[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0, 1.1, 1.2, 1.3 ];
+        var index = Math.max(4, minMass);
+        var rangeArr = [minMass];//[0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0, 1.1, 1.2, 1.3 ];
+        while (index < maxMass)
+        {
+            rangeArr.push(index);
+            if (index < 1000)
+            {
+                index = index * index;
+            }
+            else {
+                index = index * 1.5;
+            }
+        }
         //rangeArr = rangeArr.map((d) =>  d * 3);
-        var xScale = d3.scaleOrdinal().range(rangeArr);
+        var xScale = d3.scaleQuantile().range(rangeArr);
         xScale.domain(this.props.worldmap.meteoritepath.features.map(function(d) { return (d.properties.mass); }));
+
+        //rangeArr = rangeArr.map((d) =>  d * 3);
+        var opacityScale = d3.scaleQuantize().range(_.range(0.1, 0.75, 0.01));
+        opacityScale.domain(this.props.worldmap.meteoritepath.features.map(function(d) { return (d.properties.mass); }));
 
         //var colorRange = d3.schemeCategory10;
         var colorRange = [d3.rgb("#007AFF"), d3.rgb('#FFF500')];
@@ -123,10 +138,10 @@ class MeteoritesWorldMap extends Component {
         .data(this.props.worldmap.wolrdmappath.features)
         .enter().append("path")
         .attr("d", path)
-        .style("fill", function(d) { return '#238B27'; })//"#246024"; })
+        .style("fill", function(d) { return '#238B27'; })//"" #246024; })
         .style('stroke', 'rgba(0,0,0,0.5)')
         .style('stroke-width', 1.00)
-        .style("opacity",0.5);
+        .style("opacity",0.99);
 
         var meteorite = svg.append("g")
         .attr("class", "meteorite")
@@ -150,12 +165,47 @@ class MeteoritesWorldMap extends Component {
 
         })
         .attr("r", function(d){
-            //console.log("size radius", "" + xScale(d.properties.mass) + "px");
-            return "" + xScale(d.properties.mass) + "";
+            console.log("max mass : ", maxMass, "mass : ", d.properties.mass, " size radius", "" + xScale(d.properties.mass) + "px");
+            var r = 0.1;
+            var mass = d.properties.mass;
+
+            if (mass < 1000)
+            {
+                r = 1;
+            }
+            else if (mass < 2000)
+            {
+                r = 2;
+            }
+            else if (mass < 4000)
+            {
+                r = 3;
+            }
+            else if (mass < 16000)
+            {
+                r = 4.5;
+            }
+            else if (mass < 256000)
+            {
+                r = 7;
+            }
+            else if (mass < 1000000)
+            {
+                r = 12;
+            }
+            else {
+                r = 16;
+            }
+            return r;
+            //23000000
+            //return xScale(d.properties.mass);
+            //return 1 + (d.properties.mass / maxMass) * 10;
             //return d.properties.mass / maxMass * 10;
         })
         .style("fill", function(d) { return colorScale(d.properties.mass); })//"#246024"; })
-        .style("opacity",0.5)
+        .style('stroke', 'black')
+        .style('stroke-width', 1.00)
+        .style("opacity",function(d) { return 1- opacityScale(d.properties.mass); })
         .on('mouseover', tip.show)
         .on('mouseout', tip.hide);;
 
