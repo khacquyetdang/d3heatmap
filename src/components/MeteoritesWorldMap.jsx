@@ -199,7 +199,7 @@ class MeteoritesWorldMap extends Component {
             return r;
             //23000000
             //return xScale(d.properties.mass);
-            //return 1 + (d.properties.mass / maxMass) * 10;
+            //return  ((xScale(d.properties.mass) / maxMass)) * 16;
             //return d.properties.mass / maxMass * 10;
         })
         .style("fill", function(d) { return colorScale(d.properties.mass); })//"#246024"; })
