@@ -343,7 +343,7 @@ class HeatMap extends Component {
 
         slided = (d) => {
             var currentVal = d.target.value;
-            this.setState({zoomValue: currentVal}, function(){
+            this.setState({zoomValue: currentVal}, function() {
                 console.log("slided val currentVal", currentVal, "this.value", this.value);
                 this.azoom.scaleTo(this.container, currentVal);
             }
