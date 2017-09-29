@@ -182,7 +182,7 @@ class MeteoritesWorldMap extends Component {
         meteorite.call(tip);
 
         var azoom = d3.zoom()
-        .scaleExtent([1, 8])
+        .scaleExtent([1., 8.])
         .on("zoom", zoomed);
         function zoomed() {
             //d3.select("d3-tip").remove();
@@ -207,10 +207,21 @@ class MeteoritesWorldMap extends Component {
 
     renderTitle = () => {
         return (
-            <input type="range"
-                value={this.state.zoomValue}
-                ref={slider => this.slider = slider}
-                onChange={this.slided}/>
+            <div className="TitleContainer">
+                <div className='TitleSVG'>Meteorites WorldMap</div>
+
+                <div>
+                    The data source is from  {" "}
+                    <a target="_blank" href="https://raw.githubusercontent.com/FreeCodeCamp/ProjectReferenceData/master/meteorite-strike-data.json">
+                        Meteorites on the world from FreeCodeCamp
+                    </a>
+                </div>
+                <input type="range"
+                    value={this.state.zoomValue}
+                    ref={slider => this.slider = slider}
+                    onChange={this.slided}/>
+
+            </div>
         );
     }
     slided = (d) => {
@@ -241,10 +252,7 @@ class MeteoritesWorldMap extends Component {
 
         return (
             <div className="Container">
-                <div className="TitleContainer">
-                    <div className='TitleSVG'>Meteorites WorldMap</div>
-                    { this.renderTitle() }
-                </div>
+                { this.renderTitle() }
                 <div className="svg_container_worldmap" style={svgContainerStyle}>
                     <svg id="heatmapchart"
                         width={width}
